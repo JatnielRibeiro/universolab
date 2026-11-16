@@ -23,6 +23,7 @@
 <nav class="nav">
 <button class="active" data-view="dashboard"><span>▦</span>Painel</button>
 <button data-view="questions"><span>∑</span>Banco de questões</button>
+<button data-view="import"><span>⇧</span>Importar prova</button>
 <button data-view="ai"><span>✦</span>Gerador com IA</button>
 <button data-view="builder"><span>▤</span>Montar prova</button>
 <button data-view="exams"><span>▣</span>Minhas provas</button>
@@ -53,6 +54,34 @@
 <div class="field full"><label>Resolução / comentário do professor (opcional)</label><textarea id="q-explanation" placeholder="Explique a resolução ou os critérios de correção."></textarea></div>
 </div><div class="actions"><button class="btn" type="submit">Salvar questão</button><button class="btn alt" type="reset">Limpar</button></div></form></div>
 <div class="panel"><h2>Acervo de questões</h2><div class="toolbar"><input id="q-search" placeholder="Pesquisar enunciado ou conteúdo"><select id="q-filter"><option value="">Todas as disciplinas</option></select><select id="q-type-filter"><option value="">Todos os tipos</option><option value="objective">Objetivas</option><option value="discursive">Discursivas</option></select></div><div id="qlist" class="list"></div></div>
+</section>
+<section class="view" id="view-import">
+<div class="panel">
+<h2>Importar avaliação em PDF</h2>
+<p class="sub">Envie a prova completa com o gabarito. O ProvaLab extrai o texto e tenta identificar as respostas corretas para você conferir antes de salvar.</p>
+<div class="notice">Esta função não utiliza inteligência artificial. Funciona com PDFs que possuem texto selecionável. PDFs digitalizados como imagem poderão ser preenchidos manualmente nesta etapa; o OCR será implementado posteriormente.</div>
+<div class="grid" style="margin-top:15px">
+<div class="field"><label>URL do backend ProvaLab</label><input id="db-api-url" placeholder="https://seu-servico.onrender.com"></div>
+<div class="field"><label>Código de acesso do serviço</label><input id="db-api-token" type="password" autocomplete="off" placeholder="Token gerado no Render"></div>
+<div class="field full"><label>Arquivo da avaliação (PDF)</label><input id="assessment-pdf" type="file" accept="application/pdf,.pdf"></div>
+</div>
+<div class="actions"><button class="btn" id="parse-assessment" type="button">Analisar PDF e extrair gabarito</button></div>
+<div id="import-status" class="notice" style="display:none;margin-top:14px" aria-live="polite"></div>
+</div>
+<div class="panel" id="assessment-review" style="display:none">
+<h2>Conferência da avaliação</h2>
+<p class="sub">Revise os dados e confirme todas as respostas corretas antes de salvar.</p>
+<div class="grid">
+<div class="field"><label>Título da avaliação</label><input id="assessment-title" placeholder="Ex.: Avaliação bimestral"></div>
+<div class="field"><label>Disciplina</label><select id="assessment-subject"></select></div>
+<div class="field"><label>Etapa / ano</label><input id="assessment-grade" placeholder="Ex.: 9º ano - Ensino Fundamental"></div>
+<div class="field"><label>Quantidade de questões</label><input id="assessment-count" type="number" min="1" max="100" value="10"></div>
+</div>
+<div style="margin-top:17px"><h3 style="font:600 16px Fredoka;color:var(--ink);margin:0 0 5px">Gabarito identificado</h3><p class="sub">Selecione a alternativa correta de cada questão. Nenhuma resposta será considerada confirmada sem sua revisão.</p><div id="answer-key-editor" class="grid"></div></div>
+<details style="margin-top:15px"><summary style="cursor:pointer;font-size:12px;font-weight:900;color:var(--dark)">Visualizar texto extraído do PDF</summary><pre id="extracted-text" class="ai-output" style="white-space:pre-wrap;max-height:260px"></pre></details>
+<div class="actions"><button class="btn" id="save-assessment" type="button">Salvar avaliação no banco de dados</button><button class="btn alt" id="cancel-assessment" type="button">Cancelar importação</button></div>
+</div>
+<div class="panel"><div class="itemtop"><div><h2>Avaliações salvas no banco</h2><p class="sub">Registros persistidos no PostgreSQL conectado ao backend.</p></div><button class="btn alt" id="refresh-assessments" type="button">Atualizar lista</button></div><div id="saved-assessments" class="list"><div class="empty">Conecte o backend para consultar as avaliações.</div></div></div>
 </section>
 <section class="view" id="view-ai">
 <div class="panel"><h2>Gerador inteligente de questões</h2><p class="sub">Configure os parâmetros e prepare uma instrução completa para um modelo de IA.</p>
@@ -100,9 +129,9 @@ const save=()=>localStorage.setItem(KEY,JSON.stringify(db));
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const toast=m=>{const t=$('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2600)};
 const fill=(id,all=false)=>{const s=$(id);s.innerHTML=(all?'<option value="">Todas as disciplinas</option>':'')+subjects.map(x=>'<option>'+x+'</option>').join('')};
-['q-subject','ai-subject','e-subject'].forEach(id=>fill(id));fill('q-filter',true);fill('builder-subject',true);
+['q-subject','ai-subject','e-subject','assessment-subject'].forEach(id=>fill(id));fill('q-filter',true);fill('builder-subject',true);
 const titles={dashboard:['Painel de avaliações','Crie provas, gerencie questões e organize suas turmas.'],questions:['Banco de questões','Cadastre e reutilize questões de todas as disciplinas.'],ai:['Gerador inteligente','Prepare questões com apoio de inteligência artificial.'],builder:['Montar avaliação','Selecione questões e configure sua prova.'],exams:['Minhas avaliações','Consulte, revise e imprima suas provas.'],classes:['Turmas','Organize suas avaliações por turma.'],preview:['Visualização da prova','Confira o documento antes de imprimir.']};
-function view(v){document.querySelectorAll('.view').forEach(x=>x.classList.toggle('active',x.id==='view-'+v));document.querySelectorAll('[data-view]').forEach(x=>x.classList.toggle('active',x.dataset.view===v));$('page-title').textContent=titles[v][0];$('page-desc').textContent=titles[v][1];if(v==='builder'){renderBuilder();fillClasses()}if(v==='dashboard')dashboard();if(v==='exams')renderExams();if(v==='classes')renderClasses();window.scrollTo({top:0,behavior:'smooth'})}
+function view(v){document.querySelectorAll('.view').forEach(x=>x.classList.toggle('active',x.id==='view-'+v));document.querySelectorAll('[data-view]').forEach(x=>x.classList.toggle('active',x.dataset.view===v));$('page-title').textContent=titles[v][0];$('page-desc').textContent=titles[v][1];if(v==='builder'){renderBuilder();fillClasses()}if(v==='dashboard')dashboard();if(v==='exams')renderExams();if(v==='classes')renderClasses();if(v==='import')loadAssessments();window.scrollTo({top:0,behavior:'smooth'})}
 document.querySelectorAll('[data-view]').forEach(b=>b.onclick=()=>view(b.dataset.view));document.querySelectorAll('[data-go]').forEach(a=>a.onclick=e=>{e.preventDefault();view(a.dataset.go)});$('new-exam').onclick=()=>view('builder');
 function dashboard(){$('s-exams').textContent=db.exams.length;$('s-questions').textContent=db.questions.length;$('s-classes').textContent=db.classes.length;$('s-ai').textContent=db.aiImports;const host=$('recent');host.innerHTML=db.exams.length?db.exams.slice(-4).reverse().map(e=>'<article class="item"><div class="itemtop"><div><h3>'+esc(e.title)+'</h3><p>'+esc(e.subject)+' • '+e.questions.length+' questões • '+esc(e.grade)+'</p></div><span class="tag">'+esc(e.code)+'</span></div></article>').join(''):'<div class="empty">Nenhuma prova criada ainda.</div>'}
 function renderQuestions(){const term=$('q-search').value.toLowerCase(),sub=$('q-filter').value,type=$('q-type-filter').value;const rows=db.questions.filter(q=>(!sub||q.subject===sub)&&(!type||q.type===type)&&(!term||(q.statement+' '+q.topic).toLowerCase().includes(term)));$('qlist').innerHTML=rows.length?rows.map(q=>'<article class="item"><div class="itemtop"><div><h3>'+esc(q.statement)+'</h3><p>'+esc(q.subject)+' • '+esc(q.grade)+' • '+esc(q.topic)+' • '+esc(q.level)+(q.bncc?' • '+esc(q.bncc):'')+'</p></div><span class="tag">'+(q.type==='objective'?'Objetiva':'Discursiva')+'</span></div><p style="margin-top:7px">'+(q.type==='objective'?'Gabarito: '+esc(q.answer):'Resposta discursiva')+' • '+esc(q.points)+' ponto(s)</p><div class="actions"><button class="btn ghost" data-del-q="'+q.id+'">Excluir</button></div></article>').join(''):'<div class="empty">Nenhuma questão encontrada. Cadastre uma nova questão ou ajuste os filtros.</div>';document.querySelectorAll('[data-del-q]').forEach(b=>b.onclick=()=>{if(confirm('Excluir esta questão do banco?')){db.questions=db.questions.filter(q=>q.id!==b.dataset.delQ);selected.delete(b.dataset.delQ);save();renderQuestions();renderBuilder();dashboard()}})}
@@ -135,6 +164,76 @@ $('generate-live').onclick=async()=>{
  }catch(err){status.textContent='Erro: '+err.message}
  finally{button.disabled=false;button.textContent='✦ Gerar questões automaticamente'}
 };
+
+// Importação de PDF e persistência no PostgreSQL (sem dependência de IA).
+let parsedAssessment=null;
+function apiConfig(){return{base:$('db-api-url').value.trim().replace(/\\/$/,''),token:$('db-api-token').value.trim()}}
+function apiHeaders(token){return token?{Authorization:'Bearer '+token}:{}}
+function renderAnswerKey(){
+ const count=Math.max(1,Math.min(100,Number($('assessment-count').value)||1));
+ const host=$('answer-key-editor');
+ host.innerHTML=Array.from({length:count},(_,i)=>{
+  const n=String(i+1),value=parsedAssessment?.answer_key?.[n]||'';
+  return '<div class="field"><label>Questão '+n+'</label><select data-answer-number="'+n+'"><option value="">Selecione</option>'+['A','B','C','D','E'].map(a=>'<option value="'+a+'" '+(value===a?'selected':'')+'>'+a+'</option>').join('')+'</select></div>';
+ }).join('');
+}
+$('assessment-count').onchange=renderAnswerKey;
+$('parse-assessment').onclick=async()=>{
+ const file=$('assessment-pdf').files[0],cfg=apiConfig(),status=$('import-status');
+ if(!cfg.base){status.style.display='block';status.textContent='Informe a URL pública do backend ProvaLab.';return}
+ if(!file){status.style.display='block';status.textContent='Selecione o arquivo PDF da avaliação.';return}
+ const form=new FormData();form.append('file',file);
+ status.style.display='block';status.textContent='Enviando PDF e extraindo o texto e o gabarito...';
+ $('parse-assessment').disabled=true;
+ try{
+  const response=await fetch(cfg.base+'/api/assessments/preview',{method:'POST',headers:apiHeaders(cfg.token),body:form});
+  const data=await response.json();
+  if(!response.ok)throw new Error(data.detail||'Não foi possível analisar o PDF.');
+  parsedAssessment=data;
+  $('assessment-review').style.display='block';
+  $('assessment-title').value=file.name.replace(/\\.pdf$/i,'').replace(/[_-]+/g,' ');
+  $('assessment-grade').value='';
+  $('assessment-count').value=Math.max(1,Math.min(100,data.question_count||10));
+  $('extracted-text').textContent=data.extracted_text||'Nenhum texto selecionável foi encontrado.';
+  renderAnswerKey();
+  status.textContent=data.message||'PDF analisado. Confira o gabarito.';
+  if(data.extraction_status==='scanned_pdf')status.textContent+=' Este arquivo parece ser uma digitalização; preencha o gabarito manualmente.';
+ }catch(error){status.textContent='Erro: '+error.message}
+ finally{$('parse-assessment').disabled=false}
+};
+$('save-assessment').onclick=async()=>{
+ const cfg=apiConfig(),status=$('import-status');
+ if(!parsedAssessment){toast('Analise um PDF antes de salvar.');return}
+ const count=Math.max(1,Math.min(100,Number($('assessment-count').value)||1));
+ const answerKey={};
+ document.querySelectorAll('[data-answer-number]').forEach(el=>{if(el.value)answerKey[el.dataset.answerNumber]=el.value});
+ if(Object.keys(answerKey).length!==count){status.textContent='Confira o gabarito: selecione uma resposta para cada uma das '+count+' questões.';status.style.display='block';return}
+ const payload={title:$('assessment-title').value.trim(),subject:$('assessment-subject').value,grade:$('assessment-grade').value.trim(),question_count:count,answer_key:answerKey,source_filename:parsedAssessment.filename,extracted_text:parsedAssessment.extracted_text||''};
+ if(!payload.title||!payload.grade){status.textContent='Informe o título e a etapa/ano da avaliação.';status.style.display='block';return}
+ $('save-assessment').disabled=true;status.textContent='Salvando avaliação no banco de dados...';
+ try{
+  const response=await fetch(cfg.base+'/api/assessments',{method:'POST',headers:{'Content-Type':'application/json',...apiHeaders(cfg.token)},body:JSON.stringify(payload)});
+  const data=await response.json();if(!response.ok)throw new Error(data.detail||'Não foi possível salvar a avaliação.');
+  status.textContent='Avaliação salva com sucesso no banco de dados. Código: '+data.id;
+  parsedAssessment=null;$('assessment-review').style.display='none';$('assessment-pdf').value='';
+  await loadAssessments();toast('Avaliação salva no PostgreSQL.');
+ }catch(error){status.textContent='Erro ao salvar: '+error.message}
+ finally{$('save-assessment').disabled=false}
+};
+$('cancel-assessment').onclick=()=>{parsedAssessment=null;$('assessment-review').style.display='none';$('import-status').style.display='none';$('assessment-pdf').value=''};
+$('refresh-assessments').onclick=loadAssessments;
+async function loadAssessments(){
+ const host=$('saved-assessments');if(!host)return;
+ const cfg=apiConfig();
+ if(!cfg.base){host.innerHTML='<div class="empty">Informe a URL do backend acima para consultar as avaliações salvas.</div>';return}
+ host.innerHTML='<div class="empty">Consultando o banco de dados...</div>';
+ try{
+  const response=await fetch(cfg.base+'/api/assessments',{headers:apiHeaders(cfg.token)});
+  const data=await response.json();if(!response.ok)throw new Error(data.detail||'Falha na consulta.');
+  const rows=data.assessments||[];
+  host.innerHTML=rows.length?rows.map(a=>'<article class="item"><div class="itemtop"><div><h3>'+esc(a.title)+'</h3><p>'+esc(a.subject)+' • '+esc(a.grade)+' • '+a.question_count+' questões • '+esc(a.source_filename)+'</p></div><span class="tag">'+Object.keys(a.answer_key||{}).length+' respostas</span></div><p style="margin-top:7px;font-size:11px;color:var(--muted)">Salva em '+new Date(a.created_at).toLocaleString('pt-BR')+'</p></article>').join(''):'<div class="empty">Nenhuma avaliação cadastrada no banco ainda.</div>';
+ }catch(error){host.innerHTML='<div class="empty">Não foi possível consultar o banco: '+esc(error.message)+'</div>'}
+}
 function renderBuilder(){const term=$('builder-search').value.toLowerCase(),sub=$('builder-subject').value;const rows=db.questions.filter(q=>(!sub||q.subject===sub)&&(!term||(q.statement+' '+q.topic).toLowerCase().includes(term)));$('builder-list').innerHTML=rows.length?rows.map(q=>'<label class="choice"><input type="checkbox" data-select="'+q.id+'" '+(selected.has(q.id)?'checked':'')+'><span><b>'+esc(q.subject)+' • '+esc(q.topic)+'</b><small>'+esc(q.statement.slice(0,210))+(q.statement.length>210?'…':'')+' • '+(q.type==='objective'?'Objetiva':'Discursiva')+' • '+esc(q.points)+' ponto(s)</small></span></label>').join(''):'<div class="empty">Cadastre questões no banco para começar a montar uma prova.</div>';document.querySelectorAll('[data-select]').forEach(c=>c.onchange=()=>{c.checked?selected.add(c.dataset.select):selected.delete(c.dataset.select);$('selected-count').textContent=selected.size+' selecionadas'});$('selected-count').textContent=selected.size+' selecionadas'}
 $('builder-search').oninput=renderBuilder;$('builder-subject').onchange=renderBuilder;
 function fillClasses(){const s=$('e-class'),v=s.value;s.innerHTML='<option value="">Não vinculada</option>'+db.classes.map(c=>'<option value="'+c.id+'">'+esc(c.name)+'</option>').join('');s.value=v}
