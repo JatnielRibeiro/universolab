@@ -45,7 +45,7 @@ class GeneratedQuestion(BaseModel):
     level: str
     bncc: str = ""
     statement: str
-    options: list[str] = []
+    options: list[str] = Field(default_factory=list)
     answer: str = ""
     points: float = 1
     explanation: str = ""
