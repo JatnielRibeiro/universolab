@@ -167,7 +167,7 @@ $('generate-live').onclick=async()=>{
 
 // Importação de PDF e persistência no PostgreSQL (sem dependência de IA).
 let parsedAssessment=null;
-function apiConfig(){return{base:$('db-api-url').value.trim().replace(/\\/$/,''),token:$('db-api-token').value.trim()}}
+function apiConfig(){return{base:$('db-api-url').value.trim().replace(/\/$/,''),token:$('db-api-token').value.trim()}}
 function apiHeaders(token){return token?{Authorization:'Bearer '+token}:{}}
 function renderAnswerKey(){
  const count=Math.max(1,Math.min(100,Number($('assessment-count').value)||1));
@@ -191,7 +191,7 @@ $('parse-assessment').onclick=async()=>{
   if(!response.ok)throw new Error(data.detail||'Não foi possível analisar o PDF.');
   parsedAssessment=data;
   $('assessment-review').style.display='block';
-  $('assessment-title').value=file.name.replace(/\\.pdf$/i,'').replace(/[_-]+/g,' ');
+  $('assessment-title').value=file.name.replace(/\.pdf$/i,'').replace(/[_-]+/g,' ');
   $('assessment-grade').value='';
   $('assessment-count').value=Math.max(1,Math.min(100,data.question_count||10));
   $('extracted-text').textContent=data.extracted_text||'Nenhum texto selecionável foi encontrado.';
