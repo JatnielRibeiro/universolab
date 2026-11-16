@@ -4,7 +4,7 @@ import vm from "node:vm";
 
 const root = process.cwd();
 const requiredPages = [
-  "index.html", "fisica.html", "matematica.html", "ciencias.html",
+  "index.html", "provalab.html", "fisica.html", "matematica.html", "ciencias.html",
   "laboratorio.html", "movimento-retilineo.html", "leis-newton.html",
   "estatica.html", "energia-mecanica.html", "movimento-circular.html",
   "queda-livre.html", "gravitacao.html", "eletromagnetismo.html",
