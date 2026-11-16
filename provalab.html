@@ -29,7 +29,7 @@
 <button data-view="exams"><span>▣</span>Minhas provas</button>
 <button data-view="classes"><span>♙</span>Turmas</button>
 </nav>
-<div class="side-note">Crie avaliações, organize seu acervo e acompanhe a aprendizagem. Seus dados ficam neste navegador nesta versão inicial.</div>
+<div class="side-note">Crie avaliações, organize seu acervo e importe provas para o banco PostgreSQL conectado ao ProvaLab.</div>
 </aside>
 <div class="main">
 <header class="top"><div><span class="muted">UniversoLab / </span><strong>ProvaLab</strong></div><a href="index.html">← Voltar ao UniversoLab</a></header>
@@ -117,7 +117,7 @@
 <div class="panel"><h2>Turmas cadastradas</h2><div id="clist" class="list"></div></div>
 </section>
 <section class="view" id="view-preview"><div class="panel no-print"><div class="actions"><button class="btn alt" id="back-exams">← Voltar às provas</button><button class="btn" id="print-exam">Imprimir / salvar em PDF</button></div></div><div class="preview" id="paper"></div></section>
-<div class="muted no-print" style="text-align:center;font-size:10px;padding:20px">ProvaLab • UniversoLab • Protótipo funcional com armazenamento local</div>
+<div class="muted no-print" style="text-align:center;font-size:10px;padding:20px">ProvaLab • UniversoLab • Importação de avaliações com banco PostgreSQL</div>
 </main></div></div><div class="toast" id="toast"></div>
 <script>
 (()=>{
@@ -130,7 +130,7 @@ const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&
 const toast=m=>{const t=$('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2600)};
 const fill=(id,all=false)=>{const s=$(id);s.innerHTML=(all?'<option value="">Todas as disciplinas</option>':'')+subjects.map(x=>'<option>'+x+'</option>').join('')};
 ['q-subject','ai-subject','e-subject','assessment-subject'].forEach(id=>fill(id));fill('q-filter',true);fill('builder-subject',true);
-const titles={dashboard:['Painel de avaliações','Crie provas, gerencie questões e organize suas turmas.'],questions:['Banco de questões','Cadastre e reutilize questões de todas as disciplinas.'],ai:['Gerador inteligente','Prepare questões com apoio de inteligência artificial.'],builder:['Montar avaliação','Selecione questões e configure sua prova.'],exams:['Minhas avaliações','Consulte, revise e imprima suas provas.'],classes:['Turmas','Organize suas avaliações por turma.'],preview:['Visualização da prova','Confira o documento antes de imprimir.']};
+const titles={dashboard:['Painel de avaliações','Crie provas, gerencie questões e organize suas turmas.'],questions:['Banco de questões','Cadastre e reutilize questões de todas as disciplinas.'],ai:['Gerador inteligente','Prepare questões com apoio de inteligência artificial.'],builder:['Montar avaliação','Selecione questões e configure sua prova.'],exams:['Minhas avaliações','Consulte, revise e imprima suas provas.'],classes:['Turmas','Organize suas avaliações por turma.'],import:['Importar avaliação','Envie um PDF, confira o gabarito e salve no banco de dados.'],preview:['Visualização da prova','Confira o documento antes de imprimir.']};
 function view(v){document.querySelectorAll('.view').forEach(x=>x.classList.toggle('active',x.id==='view-'+v));document.querySelectorAll('[data-view]').forEach(x=>x.classList.toggle('active',x.dataset.view===v));$('page-title').textContent=titles[v][0];$('page-desc').textContent=titles[v][1];if(v==='builder'){renderBuilder();fillClasses()}if(v==='dashboard')dashboard();if(v==='exams')renderExams();if(v==='classes')renderClasses();if(v==='import')loadAssessments();window.scrollTo({top:0,behavior:'smooth'})}
 document.querySelectorAll('[data-view]').forEach(b=>b.onclick=()=>view(b.dataset.view));document.querySelectorAll('[data-go]').forEach(a=>a.onclick=e=>{e.preventDefault();view(a.dataset.go)});$('new-exam').onclick=()=>view('builder');
 function dashboard(){$('s-exams').textContent=db.exams.length;$('s-questions').textContent=db.questions.length;$('s-classes').textContent=db.classes.length;$('s-ai').textContent=db.aiImports;const host=$('recent');host.innerHTML=db.exams.length?db.exams.slice(-4).reverse().map(e=>'<article class="item"><div class="itemtop"><div><h3>'+esc(e.title)+'</h3><p>'+esc(e.subject)+' • '+e.questions.length+' questões • '+esc(e.grade)+'</p></div><span class="tag">'+esc(e.code)+'</span></div></article>').join(''):'<div class="empty">Nenhuma prova criada ainda.</div>'}
