@@ -440,3 +440,17 @@ input[type=number],input[type=text],select,textarea{width:100%;min-width:0}
  .metric strong{font-size:17px!important}
  .hub-hero h1,.welcome h1{font-size:clamp(25px,8vw,34px)!important}
 }
+
+/* Navegação unificada e acessível */
+.mobile-menu-toggle{display:none;align-items:center;justify-content:center;width:44px;height:44px;border:1px solid #cbd5e1;border-radius:12px;background:#fff;color:#0f766e;font-size:22px;font-weight:900;cursor:pointer}
+.site-header .top-nav{display:flex;align-items:center;gap:6px}
+.site-header .top-nav>a{display:inline-flex;align-items:center;min-height:40px;padding:9px 11px;border-radius:22px;text-decoration:none;font:900 13px Nunito,sans-serif}
+@media(max-width:760px){
+ .site-header{display:flex!important;flex-wrap:wrap!important;align-items:center!important;min-height:64px!important}
+ .mobile-menu-toggle{display:inline-flex;margin-left:auto}
+ .site-header .top-nav{display:none!important;width:100%!important;flex-direction:column!important;align-items:stretch!important;gap:4px!important;padding:8px!important;border:1px solid #e2e8f0!important;border-radius:14px!important;background:#fff!important}
+ .site-header .top-nav.mobile-open{display:flex!important}
+ .site-header .top-nav>a,.site-header .top-nav .lab-dropdown-toggle{display:flex!important;align-items:center!important;width:100%!important;min-height:44px!important;padding:10px 12px!important;border-radius:10px!important;text-align:left!important;font-size:14px!important}
+ .site-header .top-nav .lab-dropdown{width:100%!important;margin:0!important}
+ .site-header .top-nav .lab-dropdown-menu{position:static!important;width:100%!important;max-height:260px!important;overflow:auto!important;box-shadow:none!important;margin-top:4px!important}
+}
