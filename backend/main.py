@@ -236,7 +236,8 @@ def list_questions(
     offset: int = 0,
     authorization: str | None = Header(default=None),
 ):
-    # A leitura do acervo é pública; operações de escrita continuam protegidas.\n    if subject and subject not in ALLOWED_SUBJECTS:
+    # A leitura do acervo é pública; operações de escrita continuam protegidas.
+    if subject and subject not in ALLOWED_SUBJECTS:
         raise HTTPException(status_code=422, detail="Disciplina fora do escopo do ProvaLab.")
     if difficulty and difficulty not in ALLOWED_DIFFICULTIES:
         raise HTTPException(status_code=422, detail="Nível de dificuldade inválido.")
