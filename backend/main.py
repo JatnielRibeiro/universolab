@@ -118,6 +118,116 @@ class AssessmentCreate(BaseModel):
     extracted_text: str = Field(default="", max_length=200000)
 
 
+
+ALLOWED_SUBJECTS = {"Matemática", "Física", "Ciências"}
+ALLOWED_DIFFICULTIES = {"Fácil", "Médio", "Difícil"}
+
+
+class QuestionInput(BaseModel):
+    subject: Literal["Matemática", "Física", "Ciências"]
+    school_stage: str = Field(min_length=3, max_length=40)
+    grade: str = Field(min_length=2, max_length=40)
+    topic: str = Field(min_length=2, max_length=180)
+    subtopic: str = Field(default="", max_length=180)
+    difficulty: Literal["Fácil", "Médio", "Difícil"]
+    bncc_code: str = Field(default="", max_length=20)
+    bncc_description: str = Field(default="", max_length=3000)
+    question_type: Literal["objective", "discursive"] = "objective"
+    statement: str = Field(min_length=10, max_length=12000)
+    options: list[str] = Field(default_factory=list, max_length=5)
+    answer: str = Field(default="", max_length=4000)
+    explanation: str = Field(default="", max_length=12000)
+    source_type: str = Field(default="autoral", max_length=40)
+    source_name: str = Field(default="", max_length=180)
+    source_year: int | None = Field(default=None, ge=1900, le=2100)
+    source_question: str = Field(default="", max_length=40)
+    source_url: str = Field(default="", max_length=1000)
+    rights_status: str = Field(default="autoral", max_length=40)
+
+
+class QuestionBulkCreate(BaseModel):
+    questions: list[QuestionInput] = Field(min_length=1, max_length=500)
+
+
+@app.get("/api/questions")
+def list_questions(
+    subject: str | None = None,
+    school_stage: str | None = None,
+    grade: str | None = None,
+    difficulty: str | None = None,
+    topic: str | None = None,
+    limit: int = 100,
+    offset: int = 0,
+    authorization: str | None = Header(default=None),
+):
+    check_access(authorization)
+    if subject and subject not in ALLOWED_SUBJECTS:
+        raise HTTPException(status_code=422, detail="Disciplina fora do escopo do ProvaLab.")
+    if difficulty and difficulty not in ALLOWED_DIFFICULTIES:
+        raise HTTPException(status_code=422, detail="Nível de dificuldade inválido.")
+    limit = max(1, min(limit, 500))
+    offset = max(0, offset)
+    clauses, params = [], []
+    for column, value in (("subject", subject), ("school_stage", school_stage),
+                          ("grade", grade), ("difficulty", difficulty)):
+        if value:
+            clauses.append(f"{column} = %s")
+            params.append(value)
+    if topic:
+        clauses.append("topic ILIKE %s")
+        params.append(f"%{topic}%")
+    where = (" WHERE " + " AND ".join(clauses)) if clauses else ""
+    try:
+        with database() as conn:
+            total = conn.execute("SELECT COUNT(*) AS total FROM provalab_questions" + where, params).fetchone()["total"]
+            rows = conn.execute(
+                "SELECT * FROM provalab_questions" + where +
+                " ORDER BY subject, grade, topic, created_at DESC LIMIT %s OFFSET %s",
+                [*params, limit, offset],
+            ).fetchall()
+        return {"total": total, "limit": limit, "offset": offset, "questions": [
+            {**row, "id": str(row["id"]), "created_at": row["created_at"].isoformat(),
+             "updated_at": row["updated_at"].isoformat()} for row in rows
+        ]}
+    except HTTPException:
+        raise
+    except Exception as exc:
+        raise HTTPException(status_code=503, detail="Não foi possível consultar o banco de questões.") from exc
+
+
+@app.post("/api/questions/bulk")
+def create_questions_bulk(
+    payload: QuestionBulkCreate,
+    authorization: str | None = Header(default=None),
+):
+    check_access(authorization)
+    for q in payload.questions:
+        if q.question_type == "objective" and (len(q.options) != 5 or q.answer not in {"A", "B", "C", "D", "E"}):
+            raise HTTPException(status_code=422, detail="Questões objetivas precisam de cinco alternativas e gabarito A–E.")
+        if q.question_type == "discursive" and q.options:
+            raise HTTPException(status_code=422, detail="Questões discursivas não devem conter alternativas.")
+    try:
+        with database() as conn:
+            for q in payload.questions:
+                conn.execute(
+                    """INSERT INTO provalab_questions
+                    (subject, school_stage, grade, topic, subtopic, difficulty, bncc_code,
+                     bncc_description, question_type, statement, options, answer, explanation,
+                     source_type, source_name, source_year, source_question, source_url, rights_status)
+                    VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+                    ON CONFLICT DO NOTHING""",
+                    (q.subject, q.school_stage, q.grade, q.topic, q.subtopic, q.difficulty,
+                     q.bncc_code, q.bncc_description, q.question_type, q.statement,
+                     Jsonb(q.options), q.answer, q.explanation, q.source_type, q.source_name,
+                     q.source_year, q.source_question, q.source_url, q.rights_status),
+                )
+        return {"inserted": len(payload.questions), "message": "Lote de questões processado."}
+    except HTTPException:
+        raise
+    except Exception as exc:
+        raise HTTPException(status_code=503, detail="Não foi possível gravar o lote no banco de questões.") from exc
+
+
 def parse_answer_key(text: str):
     header = re.search(
         r"(?im)\b(gabarito|respostas? corretas?|chave de respostas?)\b",
