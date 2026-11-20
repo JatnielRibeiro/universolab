@@ -108,7 +108,10 @@ def ensure_schema():
         with psycopg.connect(database_url, connect_timeout=10) as conn:
             conn.execute(ddl)
     except Exception as exc:
-        raise RuntimeError("Não foi possível preparar as tabelas do ProvaLab. Confira as permissões do banco.") from exc
+        # Inclui a causa técnica no log do Render, sem registrar a URL nem credenciais.
+        raise RuntimeError(
+            f"Falha ao preparar as tabelas do ProvaLab ({type(exc).__name__}): {exc}"
+        ) from exc
 
 
 def seed_question_bank():
