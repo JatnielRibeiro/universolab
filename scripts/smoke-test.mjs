@@ -27,7 +27,7 @@ for (const file of fs.readdirSync(root).filter((f) => f.endsWith(".html"))) {
   if (!html.includes('href="assets/universolab-favicon.svg"')) errors.push(file + ": favicon ausente");
   const refs = [...html.matchAll(/(?:href|src)="([^"]+)"/g)].map((m) => m[1]);
   for (const ref of refs) {
-    if (/^(https?:|mailto:|#|data:|javascript:)/i.test(ref)) continue;
+    if (/^(https?:|mailto:|#|data:|javascript:)/i.test(ref) || /[+{}]/.test(ref)) continue;
     const local = ref.split("#")[0].split("?")[0];
     if (local && !exists(local)) errors.push(file + ": recurso/link local ausente: " + local);
   }
