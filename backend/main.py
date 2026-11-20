@@ -1,5 +1,6 @@
 import json
 import os
+from pathlib import Path
 import re
 import uuid
 from typing import Literal
@@ -110,9 +111,53 @@ def ensure_schema():
         raise RuntimeError("Não foi possível preparar as tabelas do ProvaLab. Confira as permissões do banco.") from exc
 
 
+def seed_question_bank():
+    """Carrega os arquivos JSON versionados no repositório sem duplicar questões."""
+    if not os.getenv("DATABASE_URL", "").strip():
+        return
+    seed_dir = Path(__file__).resolve().parent / "seeds"
+    if not seed_dir.exists():
+        return
+    files = sorted(seed_dir.glob("*.json"))
+    if not files:
+        return
+    try:
+        with psycopg.connect(os.environ["DATABASE_URL"], row_factory=dict_row, connect_timeout=10) as conn:
+            for seed_file in files:
+                records = json.loads(seed_file.read_text(encoding="utf-8"))
+                if not isinstance(records, list):
+                    raise ValueError(f"O arquivo {seed_file.name} precisa conter uma lista JSON.")
+                for item in records:
+                    if item.get("subject") not in ALLOWED_SUBJECTS:
+                        continue
+                    conn.execute(
+                        """INSERT INTO provalab_questions
+                        (subject, school_stage, grade, topic, subtopic, difficulty, bncc_code,
+                         bncc_description, question_type, statement, options, answer, explanation,
+                         source_type, source_name, source_year, source_question, source_url, rights_status)
+                        SELECT %s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s
+                        WHERE NOT EXISTS (
+                            SELECT 1 FROM provalab_questions WHERE statement = %s
+                        )""",
+                        (
+                            item["subject"], item["school_stage"], item["grade"], item["topic"],
+                            item.get("subtopic", ""), item["difficulty"], item.get("bncc_code", ""),
+                            item.get("bncc_description", ""), item.get("question_type", "objective"),
+                            item["statement"], Jsonb(item.get("options", [])), item.get("answer", ""),
+                            item.get("explanation", ""), item.get("source_type", "autoral"),
+                            item.get("source_name", seed_file.stem), item.get("source_year"),
+                            item.get("source_question", ""), item.get("source_url", ""),
+                            item.get("rights_status", "autoral"), item["statement"],
+                        ),
+                    )
+    except Exception as exc:
+        raise RuntimeError("Não foi possível carregar o banco inicial de questões.") from exc
+
+
 @app.on_event("startup")
 def startup():
     ensure_schema()
+    seed_question_bank()
 
 
 class GenerateRequest(BaseModel):
@@ -191,8 +236,7 @@ def list_questions(
     offset: int = 0,
     authorization: str | None = Header(default=None),
 ):
-    check_access(authorization)
-    if subject and subject not in ALLOWED_SUBJECTS:
+    # A leitura do acervo é pública; operações de escrita continuam protegidas.\n    if subject and subject not in ALLOWED_SUBJECTS:
         raise HTTPException(status_code=422, detail="Disciplina fora do escopo do ProvaLab.")
     if difficulty and difficulty not in ALLOWED_DIFFICULTIES:
         raise HTTPException(status_code=422, detail="Nível de dificuldade inválido.")
