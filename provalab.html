@@ -216,7 +216,7 @@ function preview(id){activeExam=db.exams.find(e=>e.id===id);if(!activeExam)retur
 $('back-exams').onclick=()=>view('exams');$('print-exam').onclick=()=>window.print();
 $('classform').onsubmit=e=>{e.preventDefault();db.classes.push({id:crypto.randomUUID(),name:$('class-name').value.trim(),grade:$('class-grade').value,year:$('class-year').value,notes:$('class-notes').value});save();e.target.reset();$('class-year').value=2026;renderClasses();fillClasses();dashboard();toast('Turma cadastrada.')};
 function renderClasses(){$('clist').innerHTML=db.classes.length?db.classes.map(c=>'<article class="item"><div class="itemtop"><div><h3>'+esc(c.name)+'</h3><p>'+esc(c.grade)+' • Ano letivo '+esc(c.year)+'</p></div><button class="btn ghost" data-del-class="'+c.id+'">Excluir</button></div></article>').join(''):'<div class="empty">Nenhuma turma cadastrada.</div>';document.querySelectorAll('[data-del-class]').forEach(b=>b.onclick=()=>{if(confirm('Excluir esta turma?')){db.classes=db.classes.filter(c=>c.id!==b.dataset.delClass);save();renderClasses();fillClasses();dashboard()}})}
-renderQuestions();renderBuilder();renderExams();renderClasses();dashboard();
+renderQuestions();renderBuilder();renderExams();renderClasses();dashboard();if($('builder-api-url'))loadCentralQuestions();
 })();
 </script>
 <script>document.querySelector('.global-menu-toggle')?.addEventListener('click',()=>{const b=document.querySelector('.global-menu-toggle'),n=document.querySelector('.global-site-nav'),open=n.classList.toggle('mobile-open');b.setAttribute('aria-expanded',String(open));b.setAttribute('aria-label',open?'Fechar menu':'Abrir menu');b.textContent=open?'×':'☰'});</script></body></html>
