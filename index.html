@@ -385,6 +385,10 @@ function applyFilters(){let count=0;cards.forEach(card=>{const topics=card.datas
 topicFilters.forEach(btn=>btn.addEventListener('click',()=>{topicFilters.forEach(x=>x.classList.toggle('active',x===btn));selectedTopic=btn.dataset.filter;applyFilters()}));
 </script>
 <script>
+document.getElementById('mobile-menu-toggle')?.addEventListener('click',()=>{const b=document.getElementById('mobile-menu-toggle'),n=document.getElementById('primary-navigation'),open=n.classList.toggle('mobile-open');b.setAttribute('aria-expanded',String(open));b.textContent=open?'×':'☰';b.setAttribute('aria-label',open?'Fechar menu':'Abrir menu')});
+document.getElementById('construction-close')?.addEventListener('click',()=>document.getElementById('construction-note')?.remove());
+</script>
+<script>
 document.addEventListener('click',event=>{
  const toggle=event.target.closest('.lab-dropdown-toggle');
  const dropdown=document.querySelector('.lab-dropdown');
