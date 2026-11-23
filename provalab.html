@@ -23,18 +23,19 @@ main{max-width:1100px;margin:auto;padding:34px 20px 60px}.intro{margin-bottom:22
 #answer-editor{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:10px;margin-top:15px}.answer{display:grid;grid-template-columns:1fr auto;align-items:center;gap:9px;padding:10px;border:1px solid var(--line);border-radius:11px}.answer label{font-size:12px;font-weight:900;color:var(--ink)}.answer select{min-width:72px;padding:8px;border:1px solid #cbd5e1;border-radius:8px;background:#fff}
 #result{display:none}.result-layout{display:grid;grid-template-columns:minmax(0,1fr) 240px;gap:22px;align-items:center}.key-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(95px,1fr));gap:8px}.key-cell{border:1px solid var(--line);border-radius:9px;padding:9px;text-align:center;font-size:12px;font-weight:900}.key-cell b{color:var(--dark);font-size:15px;margin-left:5px}#qrcode{display:grid;place-items:center;min-height:210px;padding:12px;border:1px dashed #b8d9d2;border-radius:12px}#qrcode img,#qrcode canvas{max-width:100%;height:auto!important}.qr-caption{text-align:center;color:var(--muted);font-size:10px;font-weight:800;margin-top:8px;word-break:break-word}
 @media(max-width:650px){.top{align-items:flex-start}.nav{width:100%}.grid{grid-template-columns:1fr}.field.full{grid-column:auto}.result-layout{grid-template-columns:1fr}#qrcode{max-width:250px;margin:auto}}
-@media print{body{background:white}.top,.intro,.input-panel,.no-print{display:none!important}main{padding:0;max-width:none}#result{display:block!important;border:0;box-shadow:none;padding:0}.result-layout{grid-template-columns:1fr 220px}.panel{border:0;box-shadow:none}.key-cell{break-inside:avoid}}
+#print-area{display:none}
+@media print{@page{size:A4;margin:10mm}body{background:white}.top,main>.intro,main>.panel{display:none!important}main{padding:0;max-width:none}#print-area{display:block!important}.answer-sheet{height:277mm;position:relative;border:1.5px solid #111;padding:9mm 8mm;page-break-after:always;break-after:page;color:#111;font-family:Arial,sans-serif}.answer-sheet:last-child{page-break-after:auto;break-after:auto}.sheet-head{text-align:center;border-bottom:1px solid #222;padding-bottom:5mm;margin-bottom:5mm}.sheet-head h1{font-size:17pt;margin:0 0 3mm}.sheet-meta{font-size:10pt;display:flex;justify-content:space-between;gap:8mm}.student-line{font-size:11pt;margin:5mm 0 7mm;border-bottom:1px solid #333;padding-bottom:3mm}.sheet-body{display:grid;grid-template-columns:38% 62%;gap:7mm;align-items:start}.sheet-qr{display:flex;flex-direction:column;align-items:center;justify-content:center;padding-top:8mm}.sheet-qr img{width:43mm;height:43mm;image-rendering:pixelated}.sheet-qr small{font-size:8pt;margin-top:3mm}.bubble-list{display:grid;grid-template-columns:repeat(2,1fr);gap:2mm 5mm}.bubble-row{display:grid;grid-template-columns:12mm repeat(5,1fr);align-items:center;font-size:9pt;min-height:9mm}.bubble{width:5mm;height:5mm;border:1.2px solid #111;border-radius:50%;display:inline-block;margin:auto}.sheet-foot{position:absolute;bottom:6mm;left:8mm;right:8mm;border-top:1px solid #333;padding-top:2mm;font-size:8pt;display:flex;justify-content:space-between}.fiducial{width:7mm;height:7mm;background:#000;position:absolute}.fiducial.tl{top:3mm;left:3mm}.fiducial.tr{top:3mm;right:3mm}.fiducial.bl{bottom:3mm;left:3mm}.fiducial.br{bottom:3mm;right:3mm}}
 </style>
 </head>
 <body>
 <header class="top">
-<a class="brand" href="index.html"><span class="mark">⚛</span><span><b>Universo<em>Lab</em></b><small>PROVALAB • GABARITO</small></span></a>
+<a class="brand" href="index.html"><span class="mark">⚛</span><span><b>Universo<em>Lab</em></b><small>PROVALAB • CARTÃO-RESPOSTA</small></span></a>
 <nav class="nav" aria-label="Navegação principal"><a href="index.html">Início</a><a href="matematica.html">Matemática</a><a href="fisica.html">Física</a><a href="ciencias.html">Ciências</a></nav>
 </header>
 <main>
-<section class="intro"><div class="eyebrow">UNIVERSOLAB • FERRAMENTA DO PROFESSOR</div><h1>Gabarito com QR Code</h1><p>Informe os dados da avaliação e marque as alternativas corretas. O ProvaLab gera o gabarito e um QR Code compacto para identificação das respostas.</p></section>
+<section class="intro"><div class="eyebrow">UNIVERSOLAB • FERRAMENTA DO PROFESSOR</div><h1>Cartão-resposta com QR Code</h1><p>Cadastre a avaliação e o gabarito do professor. Gere um cartão-resposta em PDF para o aluno preencher e, posteriormente, digitalize os cartões para realizar a correção.</p></section>
 <section class="panel input-panel">
-<h2>1. Identificação da prova</h2><p class="sub">Não é necessário anexar arquivo. Informe os dados da avaliação e marque as respostas corretas.</p>
+<h2>1. Identificação da prova</h2><p class="sub">Informe os dados da avaliação e a quantidade de questões.</p>
 <div class="grid">
 <div class="field"><label for="exam-title">Título da avaliação</label><input id="exam-title" placeholder="Ex.: Avaliação de Matemática - 1º bimestre"></div>
 <div class="field"><label for="exam-subject">Disciplina</label><select id="exam-subject"><option>Matemática</option><option>Física</option><option>Ciências</option></select></div>
@@ -44,19 +45,20 @@ main{max-width:1100px;margin:auto;padding:34px 20px 60px}.intro{margin-bottom:22
 <div class="notice">O ProvaLab não elabora nem altera o conteúdo da prova. O professor é responsável por inserir a avaliação e definir o gabarito correto.</div>
 </section>
 <section class="panel input-panel">
-<h2>2. Marque as alternativas corretas</h2><p class="sub">Selecione a resposta correta de cada questão. As opções disponíveis são A, B, C, D e E.</p>
+<h2>2. Gabarito do professor</h2><p class="sub">Registre as respostas corretas. Elas não serão impressas no cartão-resposta do aluno.</p>
 <div id="answer-editor"></div>
-<div class="actions"><button class="btn" id="generate" type="button">Gerar gabarito e QR Code</button><button class="btn alt" id="clear" type="button">Limpar respostas</button></div>
+<div class="actions"><button class="btn" id="generate" type="button">Salvar gabarito e gerar cartão-resposta</button><button class="btn alt" id="clear" type="button">Limpar respostas</button></div>
 <div id="status" class="hint" role="status" style="margin-top:12px"></div>
 </section>
 <section class="panel" id="result">
-<div class="eyebrow">PROVALAB • GABARITO GERADO</div><h2 id="result-title" style="font-size:25px;margin-top:5px"></h2><p class="sub" id="result-meta"></p>
+<div class="eyebrow">PROVALAB • AVALIAÇÃO CADASTRADA</div><h2 id="result-title" style="font-size:25px;margin-top:5px"></h2><p class="sub" id="result-meta"></p>
 <div class="result-layout">
-<div><h2 style="font-size:16px;margin-bottom:12px">Respostas corretas</h2><div id="key-output" class="key-grid"></div><p class="hint" id="exam-code" style="margin-top:14px"></p></div>
-<div><div id="qrcode"></div><div class="qr-caption">QR Code compacto com o código da avaliação e a sequência de respostas</div></div>
+<div><h2 style="font-size:16px;margin-bottom:12px">Gabarito do professor salvo nesta sessão</h2><p class="hint">As respostas corretas ficam fora do PDF do aluno e não são incluídas no QR Code.</p><p class="hint" id="exam-code" style="margin-top:14px"></p></div>
+<div><div id="qrcode"></div><div class="qr-caption">QR Code de identificação da avaliação. Não contém o gabarito.</div></div>
 </div>
-<div class="actions no-print"><button class="btn" id="print" type="button">Imprimir / Salvar em PDF</button><button class="btn alt" id="download-qr" type="button">Baixar QR Code (PNG)</button></div>
+<div class="actions no-print"><button class="btn" id="print" type="button">Gerar cartão-resposta em PDF</button></div>
 </section>
+<section id="print-area" aria-hidden="true"></section>
 </main>
 <script>
 (()=>{
@@ -79,26 +81,30 @@ $('generate').addEventListener('click',()=>{
  const id='PL-'+(crypto.randomUUID?crypto.randomUUID().replace(/-/g,'').slice(0,10).toUpperCase():Math.random().toString(36).slice(2,12).toUpperCase());
  // O QR Code guarda somente os dados indispensáveis. Metadados longos ficam
  // visíveis no gabarito impresso, evitando estouro de capacidade do QR.
- const answerSequence=Array.from({length:count},(_,i)=>answers[i+1]).join('');
- lastQrData=['PL1',id,count,answerSequence].join('|');
+ lastQrData=['PL1',id,count].join('|');
  const payload={id,title:$('exam-title').value.trim(),subject:$('exam-subject').value,grade:$('exam-grade').value.trim(),question_count:count,answers};
  $('result-title').textContent=payload.title;
  $('result-meta').textContent=[payload.subject,payload.grade,count+' questões'].filter(Boolean).join(' • ');
  $('exam-code').textContent='Código da avaliação: '+id;
- $('key-output').innerHTML=Object.entries(answers).map(([n,a])=>'<div class="key-cell">Questão '+n+' <b>'+a+'</b></div>').join('');
+ 
  $('qrcode').innerHTML='';
  if(typeof QRCode==='undefined'){$('status').textContent='O gerador de QR Code não carregou. Verifique a conexão com a internet e atualize a página.';return}
  try{new QRCode($('qrcode'),{text:lastQrData,width:210,height:210,colorDark:'#183b37',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.M});}catch(err){$('status').textContent='Falha ao gerar o QR Code: '+err.message;return}
- $('result').style.display='block';$('status').textContent='Gabarito e QR Code gerados. Nenhum anexo foi necessário. O QR Code contém o código da avaliação e a sequência compacta das respostas corretas.';
+ $('result').style.display='block';buildStudentSheets(id,payload);$('status').textContent='Avaliação cadastrada. O gabarito ficou restrito a esta sessão. Gere o PDF do cartão-resposta para os alunos.';
  $('result').scrollIntoView({behavior:'smooth',block:'start'});
 });
+function buildStudentSheets(id,payload){
+ const qrCanvas=$('qrcode').querySelector('canvas'),qrImg=$('qrcode').querySelector('img');
+ const qrSrc=qrCanvas?qrCanvas.toDataURL('image/png'):(qrImg?qrImg.src:'');
+ const pages=[];
+ for(let first=1;first<=payload.question_count;first+=30){
+  const last=Math.min(first+29,payload.question_count);
+  const rows=Array.from({length:last-first+1},(_,i)=>{const n=first+i;return '<div class="bubble-row"><strong>Q.'+n+'</strong>'+['A','B','C','D','E'].map(()=>'<span class="bubble"></span>').join('')+'</div>'}).join('');
+  pages.push('<article class="answer-sheet"><i class="fiducial tl"></i><i class="fiducial tr"></i><i class="fiducial bl"></i><i class="fiducial br"></i><header class="sheet-head"><h1>UNIVERSOLAB • CARTÃO-RESPOSTA</h1><div>'+payload.title+'</div></header><div class="sheet-meta"><span>Disciplina: '+payload.subject+'</span><span>Turma: '+(payload.grade||'____________')+'</span></div><div class="student-line">Nome do(a) aluno(a): _____________________________________________________</div><div class="sheet-body"><div class="sheet-qr"><img src="'+qrSrc+'" alt="QR Code da avaliação"><small>Prova: '+id+'</small></div><div><p style="font-size:9pt;margin:0 0 3mm">Preencha completamente apenas uma bolha por questão.</p><div class="bubble-list">'+rows+'</div></div></div><footer class="sheet-foot"><span>Marque com caneta azul ou preta. Não dobre nem amasse esta folha.</span><span>Questões '+first+'–'+last+'</span></footer></article>');
+ }
+ $('print-area').innerHTML=pages.join('');
+}
 $('print').addEventListener('click',()=>window.print());
-$('download-qr').addEventListener('click',()=>{
- const canvas=$('qrcode').querySelector('canvas'),img=$('qrcode').querySelector('img');
- const url=canvas?canvas.toDataURL('image/png'):img?.src;
- if(!url){$('status').textContent='QR Code ainda não foi gerado.';return}
- const a=document.createElement('a');a.href=url;a.download='provalab-qr-code.png';a.click();
-});
 renderAnswers();
 })();
 </script>
