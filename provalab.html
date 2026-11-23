@@ -34,9 +34,8 @@ main{max-width:1100px;margin:auto;padding:34px 20px 60px}.intro{margin-bottom:22
 <main>
 <section class="intro"><div class="eyebrow">UNIVERSOLAB • FERRAMENTA DO PROFESSOR</div><h1>Gabarito com QR Code</h1><p>Use a sua própria prova. Anexe o arquivo, informe a quantidade de questões e marque as alternativas corretas. O ProvaLab gera o gabarito e um QR Code para identificação das respostas.</p></section>
 <section class="panel input-panel">
-<h2>1. Identificação da prova</h2><p class="sub">O arquivo fica no seu dispositivo; não é enviado para um servidor.</p>
+<h2>1. Identificação da prova</h2><p class="sub">Não é necessário anexar arquivo. Informe os dados da avaliação e marque as respostas corretas.</p>
 <div class="grid">
-<div class="field full"><label for="exam-file">Arquivo da prova (PDF ou imagem)</label><input id="exam-file" type="file" accept=".pdf,application/pdf,image/*"><span class="hint" id="file-name">Nenhum arquivo selecionado.</span></div>
 <div class="field"><label for="exam-title">Título da avaliação</label><input id="exam-title" placeholder="Ex.: Avaliação de Matemática - 1º bimestre"></div>
 <div class="field"><label for="exam-subject">Disciplina</label><select id="exam-subject"><option>Matemática</option><option>Física</option><option>Ciências</option></select></div>
 <div class="field"><label for="exam-grade">Turma / ano / série</label><input id="exam-grade" placeholder="Ex.: 9º ano A"></div>
@@ -62,7 +61,7 @@ main{max-width:1100px;margin:auto;padding:34px 20px 60px}.intro{margin-bottom:22
 <script>
 (()=>{
 const $=id=>document.getElementById(id);
-let selectedFile=null,lastQrData='';
+let lastQrData='';
 function renderAnswers(){
  const count=Math.max(1,Math.min(100,Number($('question-count').value)||1));
  $('question-count').value=count;
@@ -70,14 +69,10 @@ function renderAnswers(){
  $('result').style.display='none';
 }
 $('question-count').addEventListener('change',renderAnswers);
-$('exam-file').addEventListener('change',e=>{
- selectedFile=e.target.files[0]||null;
- $('file-name').textContent=selectedFile?selectedFile.name+' ('+(selectedFile.size/1024/1024).toFixed(2)+' MB)':'Nenhum arquivo selecionado.';
-});
+
 $('clear').addEventListener('click',()=>{document.querySelectorAll('[data-question]').forEach(x=>x.value='');$('result').style.display='none';$('status').textContent='Respostas limpas.'});
 $('generate').addEventListener('click',()=>{
  const count=Math.max(1,Math.min(100,Number($('question-count').value)||1));
- if(!selectedFile){$('status').textContent='Anexe primeiro o arquivo da prova (PDF ou imagem).';$('exam-file').focus();return}
  const answers={};
  for(let i=1;i<=count;i++){const v=$('answer-'+i)?.value;if(!v){$('status').textContent='Selecione a alternativa correta de todas as questões. Falta responder a questão '+i+'.';$('answer-'+i)?.focus();return}answers[i]=v}
  if(!$('exam-title').value.trim()){$('status').textContent='Informe o título da avaliação.';$('exam-title').focus();return}
@@ -91,7 +86,7 @@ $('generate').addEventListener('click',()=>{
  $('qrcode').innerHTML='';
  if(typeof QRCode==='undefined'){$('status').textContent='O gerador de QR Code não carregou. Verifique a conexão com a internet e atualize a página.';return}
  try{new QRCode($('qrcode'),{text:lastQrData,width:210,height:210,colorDark:'#183b37',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.M});}catch(err){$('status').textContent='Falha ao gerar o QR Code: '+err.message;return}
- $('result').style.display='block';$('status').textContent='Gabarito e QR Code gerados. O arquivo da prova permanece no seu dispositivo e não é incluído no QR Code.';
+ $('result').style.display='block';$('status').textContent='Gabarito e QR Code gerados. Nenhum anexo foi necessário; o QR Code contém os dados do gabarito.';
  $('result').scrollIntoView({behavior:'smooth',block:'start'});
 });
 $('print').addEventListener('click',()=>window.print());
