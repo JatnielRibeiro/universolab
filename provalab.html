@@ -4,7 +4,7 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#0d9488">
 <title>ProvaLab | UniversoLab</title>
-<meta name="description" content="Anexe sua prova, marque as alternativas corretas e gere o gabarito com QR Code no ProvaLab.">
+<meta name="description" content="Marque as alternativas corretas e gere o gabarito com QR Code no ProvaLab.">
 <link rel="icon" type="image/svg+xml" href="assets/universolab-favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
@@ -32,7 +32,7 @@ main{max-width:1100px;margin:auto;padding:34px 20px 60px}.intro{margin-bottom:22
 <nav class="nav" aria-label="Navegação principal"><a href="index.html">Início</a><a href="matematica.html">Matemática</a><a href="fisica.html">Física</a><a href="ciencias.html">Ciências</a></nav>
 </header>
 <main>
-<section class="intro"><div class="eyebrow">UNIVERSOLAB • FERRAMENTA DO PROFESSOR</div><h1>Gabarito com QR Code</h1><p>Use a sua própria prova. Anexe o arquivo, informe a quantidade de questões e marque as alternativas corretas. O ProvaLab gera o gabarito e um QR Code para identificação das respostas.</p></section>
+<section class="intro"><div class="eyebrow">UNIVERSOLAB • FERRAMENTA DO PROFESSOR</div><h1>Gabarito com QR Code</h1><p>Informe os dados da avaliação e marque as alternativas corretas. O ProvaLab gera o gabarito e um QR Code compacto para identificação das respostas.</p></section>
 <section class="panel input-panel">
 <h2>1. Identificação da prova</h2><p class="sub">Não é necessário anexar arquivo. Informe os dados da avaliação e marque as respostas corretas.</p>
 <div class="grid">
@@ -53,7 +53,7 @@ main{max-width:1100px;margin:auto;padding:34px 20px 60px}.intro{margin-bottom:22
 <div class="eyebrow">PROVALAB • GABARITO GERADO</div><h2 id="result-title" style="font-size:25px;margin-top:5px"></h2><p class="sub" id="result-meta"></p>
 <div class="result-layout">
 <div><h2 style="font-size:16px;margin-bottom:12px">Respostas corretas</h2><div id="key-output" class="key-grid"></div><p class="hint" id="exam-code" style="margin-top:14px"></p></div>
-<div><div id="qrcode"></div><div class="qr-caption">QR Code com identificação da avaliação e respectivas respostas</div></div>
+<div><div id="qrcode"></div><div class="qr-caption">QR Code compacto com o código da avaliação e a sequência de respostas</div></div>
 </div>
 <div class="actions no-print"><button class="btn" id="print" type="button">Imprimir / Salvar em PDF</button><button class="btn alt" id="download-qr" type="button">Baixar QR Code (PNG)</button></div>
 </section>
@@ -77,8 +77,11 @@ $('generate').addEventListener('click',()=>{
  for(let i=1;i<=count;i++){const v=$('answer-'+i)?.value;if(!v){$('status').textContent='Selecione a alternativa correta de todas as questões. Falta responder a questão '+i+'.';$('answer-'+i)?.focus();return}answers[i]=v}
  if(!$('exam-title').value.trim()){$('status').textContent='Informe o título da avaliação.';$('exam-title').focus();return}
  const id='PL-'+(crypto.randomUUID?crypto.randomUUID().replace(/-/g,'').slice(0,10).toUpperCase():Math.random().toString(36).slice(2,12).toUpperCase());
- const payload={app:'ProvaLab',version:1,id,title:$('exam-title').value.trim(),subject:$('exam-subject').value,grade:$('exam-grade').value.trim(),question_count:count,answers,created_at:new Date().toISOString()};
- lastQrData=JSON.stringify(payload);
+ // O QR Code guarda somente os dados indispensáveis. Metadados longos ficam
+ // visíveis no gabarito impresso, evitando estouro de capacidade do QR.
+ const answerSequence=Array.from({length:count},(_,i)=>answers[i+1]).join('');
+ lastQrData=['PL1',id,count,answerSequence].join('|');
+ const payload={id,title:$('exam-title').value.trim(),subject:$('exam-subject').value,grade:$('exam-grade').value.trim(),question_count:count,answers};
  $('result-title').textContent=payload.title;
  $('result-meta').textContent=[payload.subject,payload.grade,count+' questões'].filter(Boolean).join(' • ');
  $('exam-code').textContent='Código da avaliação: '+id;
@@ -86,7 +89,7 @@ $('generate').addEventListener('click',()=>{
  $('qrcode').innerHTML='';
  if(typeof QRCode==='undefined'){$('status').textContent='O gerador de QR Code não carregou. Verifique a conexão com a internet e atualize a página.';return}
  try{new QRCode($('qrcode'),{text:lastQrData,width:210,height:210,colorDark:'#183b37',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.M});}catch(err){$('status').textContent='Falha ao gerar o QR Code: '+err.message;return}
- $('result').style.display='block';$('status').textContent='Gabarito e QR Code gerados. Nenhum anexo foi necessário; o QR Code contém os dados do gabarito.';
+ $('result').style.display='block';$('status').textContent='Gabarito e QR Code gerados. Nenhum anexo foi necessário. O QR Code contém o código da avaliação e a sequência compacta das respostas corretas.';
  $('result').scrollIntoView({behavior:'smooth',block:'start'});
 });
 $('print').addEventListener('click',()=>window.print());
