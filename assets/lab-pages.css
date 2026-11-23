@@ -454,3 +454,10 @@ input[type=number],input[type=text],select,textarea{width:100%;min-width:0}
  .site-header .top-nav .lab-dropdown{width:100%!important;margin:0!important}
  .site-header .top-nav .lab-dropdown-menu{position:static!important;width:100%!important;max-height:260px!important;overflow:auto!important;box-shadow:none!important;margin-top:4px!important}
 }
+
+/* Cabeçalho global: navegação por disciplinas; laboratórios permanecem nas áreas de conteúdo. */
+.site-header .lab-dropdown{display:none!important}
+.site-header nav,.site-header .top-nav{flex-wrap:wrap;gap:8px}
+.site-header nav>a,.site-header .top-nav>a{border-radius:22px;padding:9px 13px;color:#3f3f46;text-decoration:none;font-weight:900}
+.site-header nav>a:hover,.site-header .top-nav>a:hover{background:#ccfbf1;color:#0f766e}
+@media(max-width:760px){.site-header{padding:0 14px!important}.site-header nav,.site-header .top-nav{gap:3px}.site-header nav>a,.site-header .top-nav>a{font-size:12px;padding:7px 9px}}
