@@ -3,220 +3,102 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#0d9488">
-<title>ProvaLab | UniversoLab</title>
-<meta name="description" content="Crie provas e avaliações de Matemática, Física e Ciências no ProvaLab, ambiente educacional do UniversoLab.">
+<title>ProvaLab | Gerador de Gabarito e QR Code</title>
+<meta name="description" content="Anexe sua prova, marque as alternativas corretas e gere o gabarito com QR Code no ProvaLab.">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <style>
-:root{--teal:#0d9488;--dark:#0f766e;--ink:#183b37;--muted:#64748b;--line:#e2e8f0;--bg:#f7faf9;--soft:#e8f5f3;--white:#fff}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:#202b2a;font-family:Nunito,sans-serif}button,input,select,textarea{font:inherit}button{cursor:pointer}.app{min-height:100vh;display:grid;grid-template-columns:245px 1fr}.side{background:#fff;border-right:1px solid var(--line);padding:22px 15px;display:flex;flex-direction:column;gap:22px}.brand{display:flex;align-items:center;gap:10px;padding:0 8px;text-decoration:none;color:var(--ink)}.mark{width:42px;height:42px;border-radius:13px;background:linear-gradient(145deg,#0f766e,#14b8a6);display:grid;place-items:center;color:white;font-size:22px}.brand b{font:700 22px Fredoka}.brand em{font-style:normal;color:var(--teal)}.brand small{display:block;font-size:9px;color:#94a3b8;letter-spacing:.13em;font-weight:900}.navlabel{font-size:10px;color:#94a3b8;font-weight:900;letter-spacing:.13em;padding:0 12px}.nav{display:grid;gap:5px}.nav button{border:0;background:transparent;text-align:left;padding:11px 12px;border-radius:11px;color:#475569;font-size:13px;font-weight:900}.nav button.active,.nav button:hover{background:var(--soft);color:var(--dark)}.nav button span{display:inline-block;width:27px;font-size:16px}.side-note{margin-top:auto;background:#f0fdfa;color:var(--dark);padding:13px;border-radius:12px;font-size:11px;font-weight:800;line-height:1.5}.main{min-width:0}.top{height:68px;position:sticky;top:0;z-index:5;background:#ffffffed;backdrop-filter:blur(12px);border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 clamp(18px,4vw,42px)}.top a{color:var(--dark);text-decoration:none;font-size:12px;font-weight:900}.content{max-width:1450px;margin:auto;padding:30px clamp(18px,4vw,42px) 55px}.head{display:flex;justify-content:space-between;align-items:flex-start;gap:18px;margin-bottom:22px}.eyebrow{font-size:10px;color:var(--teal);font-weight:1000;letter-spacing:.15em}.head h1{font:700 clamp(27px,4vw,36px) Fredoka;color:var(--ink);margin:5px 0}.head p{margin:0;color:var(--muted);font-size:13px;font-weight:700}.btn{border:1px solid var(--dark);background:var(--teal);color:white;border-radius:24px;padding:10px 16px;font-size:12px;font-weight:900}.btn:hover{background:var(--dark)}.btn.alt{background:#fff;color:var(--dark);border-color:#b8d9d2}.btn.ghost{background:transparent;color:#475569;border-color:var(--line)}.view{display:none}.view.active{display:block}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:13px;margin-bottom:18px}.stat,.panel,.quick{background:#fff;border:1px solid var(--line);border-radius:15px;box-shadow:0 3px 12px #183b3707}.stat{padding:16px}.stat strong{display:block;font:700 28px Fredoka;color:var(--ink);margin-top:6px}.stat span{font-size:11px;color:var(--muted);font-weight:800}.panel{padding:20px;margin-bottom:17px}.panel h2{font:700 20px Fredoka;color:var(--ink);margin:0 0 5px}.sub{color:var(--muted);font-size:12px;font-weight:700;margin:0 0 16px}.quickgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.quick{padding:16px;text-decoration:none;color:inherit}.quick b{display:block;font:600 16px Fredoka;margin:7px 0 3px}.quick small{font-size:11px;color:var(--muted);font-weight:700}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}.field{display:grid;gap:6px}.field.full{grid-column:1/-1}.field label{font-size:11px;font-weight:900;color:#475569}.field input,.field select,.field textarea{width:100%;padding:11px 12px;border:1px solid #cbd5e1;border-radius:10px;background:#fff;color:#202b2a;font-size:13px;outline:none}.field textarea{min-height:90px;resize:vertical}.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--teal);box-shadow:0 0 0 3px #0d94881c}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}.list{display:grid;gap:10px}.item{border:1px solid var(--line);border-radius:12px;padding:14px;background:white}.itemtop{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}.item h3{font:600 15px Fredoka;margin:0 0 5px;color:var(--ink)}.item p{font-size:11px;color:var(--muted);line-height:1.5;margin:0}.tag{display:inline-block;background:var(--soft);color:var(--dark);padding:4px 8px;border-radius:20px;font-size:10px;font-weight:900;white-space:nowrap}.empty{border:1px dashed #cbd5e1;border-radius:12px;padding:25px;text-align:center;color:#94a3b8;font-size:12px;font-weight:800}.notice{background:#f0fdfa;color:var(--dark);padding:13px 15px;border-radius:11px;font-size:11px;font-weight:800;line-height:1.5}.choice{display:flex;gap:9px;align-items:flex-start;padding:10px;border:1px solid var(--line);border-radius:10px;font-size:12px}.choice input{margin-top:3px}.choice small{display:block;color:var(--muted)}.toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:12px}.toolbar input,.toolbar select{padding:9px 11px;border:1px solid var(--line);border-radius:9px;background:white;font-size:12px}.preview{background:#fff;border:1px solid #cbd5e1;border-radius:10px;padding:28px;max-width:850px;margin:0 auto;color:#111827}.preview h2{text-align:center;font:700 22px Fredoka;margin:0 0 5px}.preview .school{text-align:center;font-size:10px;color:#64748b;margin-bottom:18px}.student{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:18px 0 24px;font-size:11px}.student div{border-bottom:1px solid #94a3b8;padding:5px}.pquestion{margin:0 0 20px;break-inside:avoid}.pquestion b{font-size:12px}.pquestion p{font-size:12px;line-height:1.55;margin:7px 0}.poptions{display:grid;gap:4px;margin-left:13px;font-size:11px}.toast{position:fixed;right:20px;bottom:20px;background:#183b37;color:white;padding:12px 16px;border-radius:11px;font-size:12px;font-weight:900;opacity:0;transition:.2s;z-index:20}.toast.show{opacity:1}.muted{color:var(--muted)}.ai-output{white-space:pre-wrap;background:#f8fafc;border:1px solid var(--line);padding:13px;border-radius:10px;font:11px/1.5 monospace;max-height:240px;overflow:auto}
-@media(max-width:900px){.app{grid-template-columns:205px 1fr}.stats{grid-template-columns:repeat(2,1fr)}}
-@media(max-width:680px){.app{display:block}.side{padding:10px 12px;border-right:0;border-bottom:1px solid var(--line);gap:8px}.brand{padding:0}.navlabel,.side-note{display:none}.nav{display:flex;overflow-x:auto}.nav button{white-space:nowrap;padding:9px;font-size:11px}.top{height:55px}.content{padding-top:20px}.head{flex-direction:column}.quickgrid{grid-template-columns:1fr}.grid{grid-template-columns:1fr}.field.full{grid-column:auto}.preview{padding:16px}.student{grid-template-columns:1fr 1fr}}
-@media print{body{background:white}.side,.top,.head,.no-print,.toast{display:none!important}.app{display:block}.content{padding:0;max-width:none}.view{display:none!important}#view-preview{display:block!important}.panel{border:0;box-shadow:none;padding:0}.preview{border:0;max-width:none;padding:0}.pquestion{break-inside:avoid}@page{size:A4;margin:17mm}}
-.top{height:auto;min-height:68px;flex-wrap:wrap;gap:10px;padding:10px clamp(18px,4vw,42px)}.global-site-nav{width:100%;order:3}.global-menu-toggle{display:none;width:44px;height:44px;border:1px solid #cbd5e1;border-radius:12px;background:#fff;color:#0f766e;font-size:22px;font-weight:900;cursor:pointer}@media(max-width:760px){.global-menu-toggle{display:inline-flex;align-items:center;justify-content:center;margin-left:auto}.global-site-nav{display:none!important}.global-site-nav.mobile-open{display:flex!important;flex-direction:column;align-items:stretch!important;background:#fff;border:1px solid #dbe3ea;border-radius:14px;padding:8px}.global-site-nav>a,.global-site-nav summary{justify-content:flex-start!important;width:100%;min-height:44px!important}.global-site-nav details{width:100%}}</style>
-<meta property="og:type" content="website"><meta property="og:site_name" content="UniversoLab"><meta property="og:title" content="ProvaLab | UniversoLab"><meta property="og:description" content="Crie, organize e imprima avaliações com o ProvaLab, ferramenta educacional integrada ao UniversoLab."><meta property="og:url" content="https://jatnielribeiro.github.io/universolab/provalab.html"><meta property="og:image" content="https://jatnielribeiro.github.io/universolab/assets/universolab-social-preview.svg"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta name="twitter:card" content="summary"><link rel="canonical" href="https://jatnielribeiro.github.io/universolab/provalab.html"><link rel="icon" type="image/svg+xml" href="assets/universolab-favicon.svg"><style>.top{height:auto;min-height:68px;flex-wrap:wrap;gap:10px;padding:10px clamp(18px,4vw,42px)}.global-site-nav{display:flex;align-items:center;gap:5px;flex-wrap:wrap;width:100%;order:3}.global-site-nav>a,.global-site-nav summary{display:inline-flex;align-items:center;justify-content:center;min-height:40px;padding:8px 10px;border-radius:20px;background:#f0fdfa;color:#0f766e;text-decoration:none;font:900 12px Nunito,sans-serif;cursor:pointer;white-space:nowrap}.global-site-nav details{position:relative}.global-site-nav details>summary{list-style:none}.global-site-nav .global-lab-links{position:absolute;top:calc(100% + 5px);left:0;z-index:50;display:grid;grid-template-columns:repeat(2,minmax(140px,1fr));gap:4px;width:min(420px,90vw);padding:10px;background:#fff;border:1px solid #dbe3ea;border-radius:12px;box-shadow:0 12px 28px #0f172a20}.global-site-nav .global-lab-links a{padding:9px;border-radius:8px;color:#334155;text-decoration:none;font:800 12px Nunito}.global-site-nav .global-lab-links a:hover{background:#ccfbf1;color:#0f766e}@media(max-width:760px){.global-site-nav{width:100%;gap:4px}.global-site-nav>a,.global-site-nav summary{min-height:44px;padding:9px 10px;font-size:11px}.global-site-nav .global-lab-links{position:static;width:100%;grid-template-columns:1fr;max-height:220px;overflow:auto;box-shadow:none}.global-site-nav details{flex:1 1 100%}}</style></head>
+:root{--teal:#0d9488;--dark:#0f766e;--ink:#183b37;--muted:#64748b;--line:#e2e8f0;--bg:#f7faf9;--soft:#e8f5f3}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:#202b2a;font-family:Nunito,sans-serif}button,input,select{font:inherit}button{cursor:pointer}
+.top{background:#fff;border-bottom:1px solid var(--line);padding:13px clamp(18px,5vw,60px);display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--ink)}.mark{width:42px;height:42px;border-radius:13px;background:linear-gradient(145deg,#0f766e,#14b8a6);display:grid;place-items:center;color:white;font-size:22px}.brand b{font:700 22px Fredoka}.brand em{font-style:normal;color:var(--teal)}.brand small{display:block;font-size:9px;color:#94a3b8;letter-spacing:.13em;font-weight:900}
+.nav{display:flex;gap:8px;flex-wrap:wrap}.nav a{padding:9px 12px;border-radius:22px;background:#f0fdfa;color:var(--dark);text-decoration:none;font-size:12px;font-weight:900}
+main{max-width:1100px;margin:auto;padding:34px 20px 60px}.intro{margin-bottom:22px}.eyebrow{font-size:10px;color:var(--teal);font-weight:1000;letter-spacing:.15em}.intro h1{font:700 clamp(28px,4vw,38px) Fredoka;color:var(--ink);margin:5px 0}.intro p{color:var(--muted);font-size:14px;font-weight:700;margin:0;max-width:720px}
+.panel{background:white;border:1px solid var(--line);border-radius:17px;padding:clamp(17px,3vw,26px);margin-bottom:18px;box-shadow:0 3px 12px #183b3707}.panel h2{font:600 20px Fredoka;color:var(--ink);margin:0 0 5px}.sub{color:var(--muted);font-size:12px;font-weight:700;margin:0 0 17px}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.field{display:grid;gap:6px}.field.full{grid-column:1/-1}.field label{font-size:11px;font-weight:900;color:#475569}.field input,.field select{width:100%;padding:11px 12px;border:1px solid #cbd5e1;border-radius:10px;background:white;font-size:13px}.field input:focus,.field select:focus{outline:2px solid #0d948833;border-color:var(--teal)}
+.hint{font-size:11px;color:var(--muted);line-height:1.5}.btn{border:1px solid var(--dark);background:var(--teal);color:white;border-radius:24px;padding:11px 17px;font-size:12px;font-weight:900}.btn:hover{background:var(--dark)}.btn.alt{background:#fff;color:var(--dark);border-color:#b8d9d2}.actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:16px}
+.notice{background:#f0fdfa;color:var(--dark);padding:13px 15px;border-radius:11px;font-size:11px;font-weight:800;line-height:1.5;margin-top:14px}
+#answer-editor{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:10px;margin-top:15px}.answer{display:grid;grid-template-columns:1fr auto;align-items:center;gap:9px;padding:10px;border:1px solid var(--line);border-radius:11px}.answer label{font-size:12px;font-weight:900;color:var(--ink)}.answer select{min-width:72px;padding:8px;border:1px solid #cbd5e1;border-radius:8px;background:#fff}
+#result{display:none}.result-layout{display:grid;grid-template-columns:minmax(0,1fr) 240px;gap:22px;align-items:center}.key-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(95px,1fr));gap:8px}.key-cell{border:1px solid var(--line);border-radius:9px;padding:9px;text-align:center;font-size:12px;font-weight:900}.key-cell b{color:var(--dark);font-size:15px;margin-left:5px}#qrcode{display:grid;place-items:center;min-height:210px;padding:12px;border:1px dashed #b8d9d2;border-radius:12px}#qrcode img,#qrcode canvas{max-width:100%;height:auto!important}.qr-caption{text-align:center;color:var(--muted);font-size:10px;font-weight:800;margin-top:8px;word-break:break-word}
+@media(max-width:650px){.top{align-items:flex-start}.nav{width:100%}.grid{grid-template-columns:1fr}.field.full{grid-column:auto}.result-layout{grid-template-columns:1fr}#qrcode{max-width:250px;margin:auto}}
+@media print{body{background:white}.top,.intro,.input-panel,.no-print{display:none!important}main{padding:0;max-width:none}#result{display:block!important;border:0;box-shadow:none;padding:0}.result-layout{grid-template-columns:1fr 220px}.panel{border:0;box-shadow:none}.key-cell{break-inside:avoid}}
+</style>
+</head>
 <body>
-<div class="app">
-<aside class="side">
-<a class="brand" href="index.html"><span class="mark">⚛</span><span><b>Universo<em>Lab</em></b><small>PROVALAB • AVALIAÇÕES</small></span></a>
-<div class="navlabel">AMBIENTE DE AVALIAÇÃO</div>
-<nav class="nav">
-<button class="active" data-view="dashboard"><span>▦</span>Painel</button>
-<button data-view="questions"><span>∑</span>Banco de questões</button>
-<button data-view="import"><span>⇧</span>Importar prova</button>
-
-<button data-view="builder"><span>▤</span>Montar prova</button>
-<button data-view="exams"><span>▣</span>Minhas provas</button>
-<button data-view="classes"><span>♙</span>Turmas</button>
-</nav>
-<div class="side-note">Crie avaliações de Matemática, Física e Ciências, organize seu acervo e importe provas para o banco conectado ao ProvaLab.</div>
-</aside>
-<div class="main">
-<header class="top"><div><span class="muted">UniversoLab / </span><strong>ProvaLab</strong></div><a href="index.html">← Voltar ao UniversoLab</a><button class="global-menu-toggle" type="button" aria-expanded="false" aria-label="Abrir menu">☰</button><nav class="global-site-nav" aria-label="Navegação principal"><a href="index.html">Início</a><a href="provalab.html">ProvaLab</a><a href="matematica.html">Matemática</a><a href="fisica.html">Física</a><a href="ciencias.html">Ciências</a><details><summary>Laboratórios</summary><div class="global-lab-links"><a href="laboratorio.html">Lançamento Oblíquo</a><a href="vetores.html">Vetores</a><a href="estatica.html">Estática</a><a href="movimento-retilineo.html">Movimento Retilíneo</a><a href="queda-livre.html">Queda Livre</a><a href="gravitacao.html">Gravitação</a><a href="energia-mecanica.html">Energia Mecânica</a><a href="leis-newton.html">Leis de Newton</a><a href="movimento-circular.html">Movimento Circular</a><a href="eletromagnetismo.html">Eletromagnetismo</a></div></details><a href="index.html#desafios">Desafios</a><a href="index.html#sobre">Sobre</a></nav></header>
-<main class="content">
-<div class="head"><div><div class="eyebrow">UNIVERSOLAB • PLATAFORMA DE AVALIAÇÃO</div><h1 id="page-title">Painel de avaliações</h1><p id="page-desc">Elabore, organize e imprima provas exclusivamente de Matemática, Física e Ciências.</p></div><button class="btn no-print" id="new-exam">＋ Nova prova</button></div>
-<section class="view active" id="view-dashboard">
-<div class="stats"><div class="stat">📝<strong id="s-exams">0</strong><span>Provas criadas</span></div><div class="stat">∑<strong id="s-questions">0</strong><span>Questões no banco</span></div><div class="stat">♙<strong id="s-classes">0</strong><span>Turmas cadastradas</span></div><div class="stat">📚<strong id="s-central">0</strong><span>Questões disponíveis no banco central</span></div></div>
-<div class="panel"><h2>Comece por aqui</h2><p class="sub">Escolha uma etapa para preparar sua avaliação.</p><div class="quickgrid"><a class="quick" href="#" data-go="questions">📚<b>Banco de questões</b><small>Cadastre e reutilize seu acervo.</small></a><a class="quick" href="#" data-go="builder">📝<b>Montar prova</b><small>Selecione questões e organize a avaliação.</small></a></div></div>
-<div class="panel"><h2>Últimas provas</h2><div id="recent" class="list"><div class="empty">Suas provas aparecerão aqui.</div></div></div>
-<div class="notice">O ProvaLab utiliza um banco de questões previamente cadastrado. A montagem da avaliação é feita por filtros pedagógicos e seleção dos itens disponíveis no acervo.</div>
-</section>
-<section class="view" id="view-questions">
-<div class="panel"><h2>Cadastro de questão</h2><p class="sub">Cadastre questões objetivas ou discursivas de Matemática, Física e Ciências.</p>
-<form id="qform"><div class="grid">
-<div class="field"><label>Disciplina</label><select id="q-subject" required></select></div><div class="field"><label>Etapa / ano</label><select id="q-grade"><option>Educação Infantil</option><option>1º ano - Ensino Fundamental</option><option>2º ano - Ensino Fundamental</option><option>3º ano - Ensino Fundamental</option><option>4º ano - Ensino Fundamental</option><option>5º ano - Ensino Fundamental</option><option>6º ano - Ensino Fundamental</option><option>7º ano - Ensino Fundamental</option><option>8º ano - Ensino Fundamental</option><option>9º ano - Ensino Fundamental</option><option>1ª série - Ensino Médio</option><option>2ª série - Ensino Médio</option><option>3ª série - Ensino Médio</option><option>EJA</option></select></div>
-<div class="field"><label>Unidade temática / conteúdo</label><input id="q-topic" placeholder="Ex.: Números, Cinemática, Ecologia" required></div><div class="field"><label>Tipo de questão</label><select id="q-type"><option value="objective">Objetiva</option><option value="discursive">Discursiva</option></select></div>
-<div class="field"><label>Dificuldade</label><select id="q-level"><option>Fácil</option><option selected>Média</option><option>Difícil</option></select></div><div class="field"><label>Habilidade BNCC (opcional)</label><input id="q-bncc" placeholder="Ex.: EF09MA08"></div>
-<div class="field full"><label>Enunciado</label><textarea id="q-statement" required placeholder="Digite o enunciado completo."></textarea></div>
-<div id="options-fields" class="field full"><label>Alternativas (uma por campo)</label><div class="grid"><input id="q-a" placeholder="Alternativa A"><input id="q-b" placeholder="Alternativa B"><input id="q-c" placeholder="Alternativa C"><input id="q-d" placeholder="Alternativa D"><input id="q-e" placeholder="Alternativa E"></div></div>
-<div class="field"><label>Gabarito</label><select id="q-answer"><option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option><option value="E">E</option></select></div>
-<div class="field"><label>Pontuação padrão</label><input id="q-points" type="number" min="0.1" step="0.1" value="1"></div>
-<div class="field full"><label>Resolução / comentário do professor (opcional)</label><textarea id="q-explanation" placeholder="Explique a resolução ou os critérios de correção."></textarea></div>
-</div><div class="actions"><button class="btn" type="submit">Salvar questão</button><button class="btn alt" type="reset">Limpar</button></div></form></div>
-<div class="panel"><h2>Acervo de questões</h2><div class="toolbar"><input id="q-search" placeholder="Pesquisar enunciado ou conteúdo"><select id="q-filter"><option value="">Todas as disciplinas</option></select><select id="q-type-filter"><option value="">Todos os tipos</option><option value="objective">Objetivas</option><option value="discursive">Discursivas</option></select></div><div id="qlist" class="list"></div></div>
-</section>
-<section class="view" id="view-import">
-<div class="panel">
-<h2>Importar avaliação em PDF</h2>
-<p class="sub">Envie a prova completa com o gabarito. O ProvaLab extrai o texto e tenta identificar as respostas corretas para você conferir antes de salvar.</p>
-<div class="notice">Esta função não utiliza inteligência artificial. Funciona com PDFs que possuem texto selecionável. PDFs digitalizados como imagem poderão ser preenchidos manualmente nesta etapa; o OCR será implementado posteriormente.</div>
-<div class="grid" style="margin-top:15px">
-<div class="field"><label>URL do backend ProvaLab</label><input id="db-api-url" placeholder="https://seu-servico.onrender.com"></div>
-<div class="field"><label>Código de acesso do serviço</label><input id="db-api-token" type="password" autocomplete="off" placeholder="Token gerado no Render"></div>
-<div class="field full"><label>Arquivo da avaliação (PDF)</label><input id="assessment-pdf" type="file" accept="application/pdf,.pdf"></div>
-</div>
-<div class="actions"><button class="btn" id="parse-assessment" type="button">Analisar PDF e extrair gabarito</button></div>
-<div id="import-status" class="notice" style="display:none;margin-top:14px" aria-live="polite"></div>
-</div>
-<div class="panel" id="assessment-review" style="display:none">
-<h2>Conferência da avaliação</h2>
-<p class="sub">Revise os dados e confirme todas as respostas corretas antes de salvar.</p>
+<header class="top">
+<a class="brand" href="index.html"><span class="mark">⚛</span><span><b>Universo<em>Lab</em></b><small>PROVALAB • GABARITO</small></span></a>
+<nav class="nav" aria-label="Navegação principal"><a href="index.html">Início</a><a href="matematica.html">Matemática</a><a href="fisica.html">Física</a><a href="ciencias.html">Ciências</a></nav>
+</header>
+<main>
+<section class="intro"><div class="eyebrow">UNIVERSOLAB • FERRAMENTA DO PROFESSOR</div><h1>Gabarito com QR Code</h1><p>Use a sua própria prova. Anexe o arquivo, informe a quantidade de questões e marque as alternativas corretas. O ProvaLab gera o gabarito e um QR Code para identificação das respostas.</p></section>
+<section class="panel input-panel">
+<h2>1. Identificação da prova</h2><p class="sub">O arquivo fica no seu dispositivo; não é enviado para um servidor.</p>
 <div class="grid">
-<div class="field"><label>Título da avaliação</label><input id="assessment-title" placeholder="Ex.: Avaliação bimestral"></div>
-<div class="field"><label>Disciplina</label><select id="assessment-subject"></select></div>
-<div class="field"><label>Etapa / ano</label><input id="assessment-grade" placeholder="Ex.: 9º ano - Ensino Fundamental"></div>
-<div class="field"><label>Quantidade de questões</label><input id="assessment-count" type="number" min="1" max="100" value="10"></div>
+<div class="field full"><label for="exam-file">Arquivo da prova (PDF ou imagem)</label><input id="exam-file" type="file" accept=".pdf,application/pdf,image/*"><span class="hint" id="file-name">Nenhum arquivo selecionado.</span></div>
+<div class="field"><label for="exam-title">Título da avaliação</label><input id="exam-title" placeholder="Ex.: Avaliação de Matemática - 1º bimestre"></div>
+<div class="field"><label for="exam-subject">Disciplina</label><select id="exam-subject"><option>Matemática</option><option>Física</option><option>Ciências</option></select></div>
+<div class="field"><label for="exam-grade">Turma / ano / série</label><input id="exam-grade" placeholder="Ex.: 9º ano A"></div>
+<div class="field"><label for="question-count">Quantidade de questões</label><input id="question-count" type="number" min="1" max="100" value="10"></div>
 </div>
-<div style="margin-top:17px"><h3 style="font:600 16px Fredoka;color:var(--ink);margin:0 0 5px">Gabarito identificado</h3><p class="sub">Selecione a alternativa correta de cada questão. Nenhuma resposta será considerada confirmada sem sua revisão.</p><div id="answer-key-editor" class="grid"></div></div>
-<details style="margin-top:15px"><summary style="cursor:pointer;font-size:12px;font-weight:900;color:var(--dark)">Visualizar texto extraído do PDF</summary><pre id="extracted-text" class="ai-output" style="white-space:pre-wrap;max-height:260px"></pre></details>
-<div class="actions"><button class="btn" id="save-assessment" type="button">Salvar avaliação no banco de dados</button><button class="btn alt" id="cancel-assessment" type="button">Cancelar importação</button></div>
+<div class="notice">O ProvaLab não elabora nem altera o conteúdo da prova. O professor é responsável por inserir a avaliação e definir o gabarito correto.</div>
+</section>
+<section class="panel input-panel">
+<h2>2. Marque as alternativas corretas</h2><p class="sub">Selecione a resposta correta de cada questão. As opções disponíveis são A, B, C, D e E.</p>
+<div id="answer-editor"></div>
+<div class="actions"><button class="btn" id="generate" type="button">Gerar gabarito e QR Code</button><button class="btn alt" id="clear" type="button">Limpar respostas</button></div>
+<div id="status" class="hint" role="status" style="margin-top:12px"></div>
+</section>
+<section class="panel" id="result">
+<div class="eyebrow">PROVALAB • GABARITO GERADO</div><h2 id="result-title" style="font-size:25px;margin-top:5px"></h2><p class="sub" id="result-meta"></p>
+<div class="result-layout">
+<div><h2 style="font-size:16px;margin-bottom:12px">Respostas corretas</h2><div id="key-output" class="key-grid"></div><p class="hint" id="exam-code" style="margin-top:14px"></p></div>
+<div><div id="qrcode"></div><div class="qr-caption">QR Code com identificação da avaliação e respectivas respostas</div></div>
 </div>
-<div class="panel"><div class="itemtop"><div><h2>Avaliações salvas no banco</h2><p class="sub">Registros persistidos no PostgreSQL conectado ao backend.</p></div><button class="btn alt" id="refresh-assessments" type="button">Atualizar lista</button></div><div id="saved-assessments" class="list"><div class="empty">Conecte o backend para consultar as avaliações.</div></div></div>
+<div class="actions no-print"><button class="btn" id="print" type="button">Imprimir / Salvar em PDF</button><button class="btn alt" id="download-qr" type="button">Baixar QR Code (PNG)</button></div>
 </section>
-<section class="view" id="view-builder">
-<div class="panel"><h2>Montagem de avaliação</h2><p class="sub">Consulte o banco central e selecione questões conforme os filtros pedagógicos. O ProvaLab não gera questões por IA.</p>
-<div class="grid" style="margin-bottom:16px">
-<div class="field full"><label>Banco central de questões</label><input id="builder-api-url" placeholder="URL pública do serviço Render"><small class="muted">Informe a URL após publicar a API no Render. A consulta do acervo será pública.</small></div>
-<div class="field"><label>Disciplina para filtrar</label><select id="builder-subject"><option value="">Todas</option><option>Matemática</option><option>Física</option><option>Ciências</option></select></div>
-<div class="field"><label>Etapa</label><select id="builder-stage"><option value="">Todas</option><option>Ensino Fundamental</option><option>Ensino Médio</option></select></div>
-<div class="field"><label>Ano / série</label><select id="builder-grade"><option value="">Todos</option><option>6º ano</option><option>7º ano</option><option>8º ano</option><option>9º ano</option><option>1ª série</option><option>2ª série</option><option>3ª série</option></select></div>
-<div class="field"><label>Dificuldade</label><select id="builder-difficulty"><option value="">Todas</option><option>Fácil</option><option>Médio</option><option>Difícil</option></select></div>
-<div class="field"><label>Conteúdo / assunto</label><input id="builder-search" placeholder="Ex.: Funções, Dinâmica, Ecologia"></div>
-<div class="field"><label>Quantidade de questões</label><select id="builder-quantity"><option value="1">01 questão(ões)</option><option value="2">02 questão(ões)</option><option value="3">03 questão(ões)</option><option value="4">04 questão(ões)</option><option value="5">05 questão(ões)</option><option value="6">06 questão(ões)</option><option value="7">07 questão(ões)</option><option value="8">08 questão(ões)</option><option value="9">09 questão(ões)</option><option value="10" selected>10 questão(ões)</option><option value="11">11 questão(ões)</option><option value="12">12 questão(ões)</option><option value="13">13 questão(ões)</option><option value="14">14 questão(ões)</option><option value="15">15 questão(ões)</option><option value="16">16 questão(ões)</option><option value="17">17 questão(ões)</option><option value="18">18 questão(ões)</option><option value="19">19 questão(ões)</option><option value="20">20 questão(ões)</option></select></div>
-</div><div class="actions"><button class="btn" id="load-central-questions" type="button">Buscar no banco de questões</button><span class="tag" id="selected-count">0 selecionadas</span></div><div id="central-status" class="notice" style="display:none;margin:12px 0" aria-live="polite"></div>
-<form id="examform"><div class="grid">
-<div class="field full"><label>Título da avaliação</label><input id="e-title" required placeholder="Ex.: Avaliação bimestral de Matemática"></div>
-<div class="field"><label>Disciplina</label><select id="e-subject"></select></div><div class="field"><label>Turma</label><select id="e-class"><option value="">Não vinculada</option></select></div>
-<div class="field"><label>Etapa / ano</label><select id="e-grade"><option>6º ano - Ensino Fundamental</option><option>7º ano - Ensino Fundamental</option><option>8º ano - Ensino Fundamental</option><option>9º ano - Ensino Fundamental</option><option>1ª série - Ensino Médio</option><option>2ª série - Ensino Médio</option><option>3ª série - Ensino Médio</option></select></div><div class="field"><label>Data de aplicação</label><input id="e-date" type="date"></div>
-<div class="field"><label>Instruções aos estudantes</label><input id="e-instructions" value="Leia atentamente as questões e responda com clareza."></div><div class="field"><label>Identificação da instituição (opcional)</label><input id="e-school" placeholder="Nome da escola"></div>
-</div><div class="actions"><button class="btn" type="submit">Criar avaliação com questões selecionadas</button></div></form></div>
-<div class="panel"><h2>Questões encontradas</h2><p class="sub">Marque até a quantidade escolhida. Para concluir a prova, selecione exatamente esse número.</p><div id="builder-list" class="list"><div class="empty">Informe os filtros e clique em “Buscar no banco de questões”.</div></div></div>
-</section>
-<section class="view" id="view-exams"><div class="panel"><h2>Minhas avaliações</h2><p class="sub">Provas criadas e prontas para revisão, edição ou impressão.</p><div id="elist" class="list"></div></div></section>
-<section class="view" id="view-classes">
-<div class="panel"><h2>Cadastro de turmas</h2><p class="sub">Organize suas avaliações por turma ou grupo de estudantes.</p><form id="classform"><div class="grid"><div class="field"><label>Nome da turma</label><input id="class-name" required placeholder="Ex.: 9º ano A"></div><div class="field"><label>Etapa / ano</label><input id="class-grade" placeholder="Ex.: Ensino Fundamental"></div><div class="field"><label>Ano letivo</label><input id="class-year" type="number" value="2026"></div><div class="field"><label>Observações (opcional)</label><input id="class-notes"></div></div><div class="actions"><button class="btn">Cadastrar turma</button></div></form></div>
-<div class="panel"><h2>Turmas cadastradas</h2><div id="clist" class="list"></div></div>
-</section>
-<section class="view" id="view-preview"><div class="panel no-print"><div class="actions"><button class="btn alt" id="back-exams">← Voltar às provas</button><button class="btn" id="print-exam">Imprimir / salvar em PDF</button></div></div><div class="preview" id="paper"></div></section>
-<div class="muted no-print" style="text-align:center;font-size:10px;padding:20px">ProvaLab • UniversoLab • Importação de avaliações com banco PostgreSQL</div>
-</main></div></div><div class="toast" id="toast"></div>
+</main>
 <script>
 (()=>{
-const $=id=>document.getElementById(id),KEY='universolab.provalab.v2';
-const subjects=['Matemática','Física','Ciências'];
-const allowedSubjects=new Set(subjects);
-const normalizeSubject=value=>({ 'Química':'Ciências','Biologia':'Ciências' }[String(value||'').trim()]||String(value||'').trim());
-const isAllowedSubject=value=>allowedSubjects.has(normalizeSubject(value));
-let db={questions:[],exams:[],classes:[]};try{db={...db,...JSON.parse(localStorage.getItem(KEY)||'{}')}}catch(e){}
-// Mantém apenas o escopo pedagógico do ProvaLab e migra Química/Biologia para Ciências.
-db.questions=(db.questions||[]).map(q=>({...q,subject:normalizeSubject(q.subject)})).filter(q=>isAllowedSubject(q.subject));
-db.exams=(db.exams||[]).map(e=>({...e,subject:normalizeSubject(e.subject),questions:(e.questions||[]).map(q=>({...q,subject:normalizeSubject(q.subject)})).filter(q=>isAllowedSubject(q.subject))})).filter(e=>isAllowedSubject(e.subject)&&e.questions.length>0);
-let centralQuestions=[];
-let selected=new Set(),activeExam=null;
-const save=()=>localStorage.setItem(KEY,JSON.stringify(db));
-const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const toast=m=>{const t=$('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2600)};
-const fill=(id,all=false)=>{const s=$(id);s.innerHTML=(all?'<option value="">Todas as disciplinas</option>':'')+subjects.map(x=>'<option>'+x+'</option>').join('')};
-['q-subject','ai-subject','e-subject','assessment-subject'].forEach(id=>fill(id));fill('q-filter',true);fill('builder-subject',true);
-const titles={dashboard:['Painel de avaliações','Crie provas, gerencie questões e organize suas turmas.'],questions:['Banco de questões','Consulte e reutilize questões cadastradas no acervo.'],builder:['Montar avaliação','Selecione questões e configure sua prova.'],exams:['Minhas avaliações','Consulte, revise e imprima suas provas.'],classes:['Turmas','Organize suas avaliações por turma.'],import:['Importar avaliação','Envie um PDF, confira o gabarito e salve no banco de dados.'],preview:['Visualização da prova','Confira o documento antes de imprimir.']};
-function view(v){document.querySelectorAll('.view').forEach(x=>x.classList.toggle('active',x.id==='view-'+v));document.querySelectorAll('[data-view]').forEach(x=>x.classList.toggle('active',x.dataset.view===v));$('page-title').textContent=titles[v][0];$('page-desc').textContent=titles[v][1];if(v==='builder'){renderBuilder();fillClasses();loadCentralQuestions()}if(v==='dashboard')dashboard();if(v==='exams')renderExams();if(v==='classes')renderClasses();if(v==='import')loadAssessments();window.scrollTo({top:0,behavior:'smooth'})}
-document.querySelectorAll('[data-view]').forEach(b=>b.onclick=()=>view(b.dataset.view));document.querySelectorAll('[data-go]').forEach(a=>a.onclick=e=>{e.preventDefault();view(a.dataset.go)});$('new-exam').onclick=()=>view('builder');
-function dashboard(){$('s-exams').textContent=db.exams.length;$('s-questions').textContent=db.questions.length;$('s-classes').textContent=db.classes.length;$('s-central').textContent=centralQuestions.length;const host=$('recent');host.innerHTML=db.exams.length?db.exams.slice(-4).reverse().map(e=>'<article class="item"><div class="itemtop"><div><h3>'+esc(e.title)+'</h3><p>'+esc(e.subject)+' • '+e.questions.length+' questões • '+esc(e.grade)+'</p></div><span class="tag">'+esc(e.code)+'</span></div></article>').join(''):'<div class="empty">Nenhuma prova criada ainda.</div>'}
-function renderQuestions(){const term=$('q-search').value.toLowerCase(),sub=$('q-filter').value,type=$('q-type-filter').value;const rows=db.questions.filter(q=>isAllowedSubject(q.subject)&&(!sub||q.subject===sub)&&(!type||q.type===type)&&(!term||(q.statement+' '+q.topic).toLowerCase().includes(term)));$('qlist').innerHTML=rows.length?rows.map(q=>'<article class="item"><div class="itemtop"><div><h3>'+esc(q.statement)+'</h3><p>'+esc(q.subject)+' • '+esc(q.grade)+' • '+esc(q.topic)+' • '+esc(q.level)+(q.bncc?' • '+esc(q.bncc):'')+'</p></div><span class="tag">'+(q.type==='objective'?'Objetiva':'Discursiva')+'</span></div><p style="margin-top:7px">'+(q.type==='objective'?'Gabarito: '+esc(q.answer):'Resposta discursiva')+' • '+esc(q.points)+' ponto(s)</p><div class="actions"><button class="btn ghost" data-del-q="'+q.id+'">Excluir</button></div></article>').join(''):'<div class="empty">Nenhuma questão encontrada. Cadastre uma nova questão ou ajuste os filtros.</div>';document.querySelectorAll('[data-del-q]').forEach(b=>b.onclick=()=>{if(confirm('Excluir esta questão do banco?')){db.questions=db.questions.filter(q=>q.id!==b.dataset.delQ);selected.delete(b.dataset.delQ);save();renderQuestions();renderBuilder();dashboard()}})}
-$('q-search').oninput=renderQuestions;$('q-filter').onchange=renderQuestions;$('q-type-filter').onchange=renderQuestions;
-$('q-type').onchange=()=>{$('options-fields').style.display=$('q-type').value==='objective'?'grid':'none';$('q-answer').parentElement.style.display=$('q-type').value==='objective'?'grid':'none'};
-$('qform').onsubmit=e=>{e.preventDefault();const type=$('q-type').value,opts=['a','b','c','d','e'].map(k=>$('q-'+k).value.trim());if(type==='objective'&&opts.some(x=>!x)){toast('Preencha as cinco alternativas.');return}const q={id:crypto.randomUUID(),subject:$('q-subject').value,grade:$('q-grade').value,topic:$('q-topic').value.trim(),type,level:$('q-level').value,bncc:$('q-bncc').value.trim(),statement:$('q-statement').value.trim(),options:opts,answer:$('q-answer').value,points:Number($('q-points').value)||1,explanation:$('q-explanation').value.trim(),source:'manual'};if(!isAllowedSubject(q.subject)){toast('O ProvaLab aceita somente Matemática, Física e Ciências.');return}db.questions.push(q);save();e.target.reset();$('q-type').value='objective';$('options-fields').style.display='grid';$('q-answer').parentElement.style.display='grid';renderQuestions();dashboard();toast('Questão adicionada ao banco.')};
-// Importação de PDF e persistência no PostgreSQL (sem dependência de IA).
-let parsedAssessment=null;
-function apiConfig(){return{base:$('db-api-url').value.trim().replace(/\/$/,''),token:$('db-api-token').value.trim()}}
-function apiHeaders(token){return token?{Authorization:'Bearer '+token}:{}}
-function renderAnswerKey(){
- const count=Math.max(1,Math.min(100,Number($('assessment-count').value)||1));
- const host=$('answer-key-editor');
- host.innerHTML=Array.from({length:count},(_,i)=>{
-  const n=String(i+1),value=parsedAssessment?.answer_key?.[n]||'';
-  return '<div class="field"><label>Questão '+n+'</label><select data-answer-number="'+n+'"><option value="">Selecione</option>'+['A','B','C','D','E'].map(a=>'<option value="'+a+'" '+(value===a?'selected':'')+'>'+a+'</option>').join('')+'</select></div>';
- }).join('');
+const $=id=>document.getElementById(id);
+let selectedFile=null,lastQrData='';
+function renderAnswers(){
+ const count=Math.max(1,Math.min(100,Number($('question-count').value)||1));
+ $('question-count').value=count;
+ $('answer-editor').innerHTML=Array.from({length:count},(_,i)=>'<div class="answer"><label for="answer-'+(i+1)+'">Questão '+(i+1)+'</label><select id="answer-'+(i+1)+'" data-question="'+(i+1)+'"><option value="">Escolher</option>'+['A','B','C','D','E'].map(x=>'<option value="'+x+'">'+x+'</option>').join('')+'</select></div>').join('');
+ $('result').style.display='none';
 }
-$('assessment-count').onchange=renderAnswerKey;
-$('parse-assessment').onclick=async()=>{
- const file=$('assessment-pdf').files[0],cfg=apiConfig(),status=$('import-status');
- if(!cfg.base){status.style.display='block';status.textContent='Informe a URL pública do backend ProvaLab.';return}
- if(!file){status.style.display='block';status.textContent='Selecione o arquivo PDF da avaliação.';return}
- const form=new FormData();form.append('file',file);
- status.style.display='block';status.textContent='Enviando PDF e extraindo o texto e o gabarito...';
- $('parse-assessment').disabled=true;
- try{
-  const response=await fetch(cfg.base+'/api/assessments/preview',{method:'POST',headers:apiHeaders(cfg.token),body:form});
-  const data=await response.json();
-  if(!response.ok)throw new Error(data.detail||'Não foi possível analisar o PDF.');
-  parsedAssessment=data;
-  $('assessment-review').style.display='block';
-  $('assessment-title').value=file.name.replace(/\.pdf$/i,'').replace(/[_-]+/g,' ');
-  $('assessment-grade').value='';
-  $('assessment-count').value=Math.max(1,Math.min(100,data.question_count||10));
-  $('extracted-text').textContent=data.extracted_text||'Nenhum texto selecionável foi encontrado.';
-  renderAnswerKey();
-  status.textContent=data.message||'PDF analisado. Confira o gabarito.';
-  if(data.extraction_status==='scanned_pdf')status.textContent+=' Este arquivo parece ser uma digitalização; preencha o gabarito manualmente.';
- }catch(error){status.textContent='Erro: '+error.message}
- finally{$('parse-assessment').disabled=false}
-};
-$('save-assessment').onclick=async()=>{
- const cfg=apiConfig(),status=$('import-status');
- if(!parsedAssessment){toast('Analise um PDF antes de salvar.');return}
- const count=Math.max(1,Math.min(100,Number($('assessment-count').value)||1));
- const answerKey={};
- document.querySelectorAll('[data-answer-number]').forEach(el=>{if(el.value)answerKey[el.dataset.answerNumber]=el.value});
- if(Object.keys(answerKey).length!==count){status.textContent='Confira o gabarito: selecione uma resposta para cada uma das '+count+' questões.';status.style.display='block';return}
- const payload={title:$('assessment-title').value.trim(),subject:$('assessment-subject').value,grade:$('assessment-grade').value.trim(),question_count:count,answer_key:answerKey,source_filename:parsedAssessment.filename,extracted_text:parsedAssessment.extracted_text||''};
- if(!isAllowedSubject(payload.subject)){status.textContent='O ProvaLab aceita somente provas de Matemática, Física e Ciências.';status.style.display='block';return}
- if(!payload.title||!payload.grade){status.textContent='Informe o título e a etapa/ano da avaliação.';status.style.display='block';return}
- $('save-assessment').disabled=true;status.textContent='Salvando avaliação no banco de dados...';
- try{
-  const response=await fetch(cfg.base+'/api/assessments',{method:'POST',headers:{'Content-Type':'application/json',...apiHeaders(cfg.token)},body:JSON.stringify(payload)});
-  const data=await response.json();if(!response.ok)throw new Error(data.detail||'Não foi possível salvar a avaliação.');
-  status.textContent='Avaliação salva com sucesso no banco de dados. Código: '+data.id;
-  parsedAssessment=null;$('assessment-review').style.display='none';$('assessment-pdf').value='';
-  await loadAssessments();toast('Avaliação salva no PostgreSQL.');
- }catch(error){status.textContent='Erro ao salvar: '+error.message}
- finally{$('save-assessment').disabled=false}
-};
-$('cancel-assessment').onclick=()=>{parsedAssessment=null;$('assessment-review').style.display='none';$('import-status').style.display='none';$('assessment-pdf').value=''};
-$('refresh-assessments').onclick=loadAssessments;
-async function loadAssessments(){
- const host=$('saved-assessments');if(!host)return;
- const cfg=apiConfig();
- if(!cfg.base){host.innerHTML='<div class="empty">Informe a URL do backend acima para consultar as avaliações salvas.</div>';return}
- host.innerHTML='<div class="empty">Consultando o banco de dados...</div>';
- try{
-  const response=await fetch(cfg.base+'/api/assessments',{headers:apiHeaders(cfg.token)});
-  const data=await response.json();if(!response.ok)throw new Error(data.detail||'Falha na consulta.');
-  const rows=(data.assessments||[]).filter(a=>isAllowedSubject(a.subject));
-  host.innerHTML=rows.length?rows.map(a=>'<article class="item"><div class="itemtop"><div><h3>'+esc(a.title)+'</h3><p>'+esc(a.subject)+' • '+esc(a.grade)+' • '+a.question_count+' questões • '+esc(a.source_filename)+'</p></div><span class="tag">'+Object.keys(a.answer_key||{}).length+' respostas</span></div><p style="margin-top:7px;font-size:11px;color:var(--muted)">Salva em '+new Date(a.created_at).toLocaleString('pt-BR')+'</p></article>').join(''):'<div class="empty">Nenhuma avaliação cadastrada no banco ainda.</div>';
- }catch(error){host.innerHTML='<div class="empty">Não foi possível consultar o banco: '+esc(error.message)+'</div>'}
-}
-function renderBuilder(){const rows=centralQuestions;$('builder-list').innerHTML=rows.length?rows.map(q=>'<label class="choice"><input type="checkbox" data-select="'+q.id+'" '+(selected.has(q.id)?'checked':'')+' '+(!selected.has(q.id)&&selected.size>=Number($('builder-quantity').value)?'disabled':'')+'><span><b>'+esc(q.subject)+' • '+esc(q.topic)+'</b><small>'+esc(q.grade)+' • '+esc(q.difficulty||q.level||'')+' • '+esc(q.statement.slice(0,240))+(q.statement.length>240?'…':'')+'</small></span></label>').join(''):'<div class="empty">Nenhuma questão encontrada com os filtros selecionados. Altere os filtros ou tente novamente.</div>';document.querySelectorAll('[data-select]').forEach(c=>c.onchange=()=>{if(c.checked&&selected.size>=Number($('builder-quantity').value)){c.checked=false;toast('Você selecionou a quantidade máxima definida.');return}c.checked?selected.add(c.dataset.select):selected.delete(c.dataset.select);$('selected-count').textContent=selected.size+' selecionadas';renderBuilder()});$('selected-count').textContent=selected.size+' selecionadas'}
-async function loadCentralQuestions(){const base=$('builder-api-url').value.trim().replace(/\/$/,''),token='',status=$('central-status');if(!base){status.style.display='block';status.textContent='Informe a URL da API do banco de questões.';return}const params=new URLSearchParams();const values={subject:$('builder-subject').value,school_stage:$('builder-stage').value,grade:$('builder-grade').value,difficulty:$('builder-difficulty').value,topic:$('builder-search').value.trim(),limit:500,offset:0};Object.entries(values).forEach(([k,v])=>{if(v!==''&&v!==null)params.set(k,String(v))});status.style.display='block';status.textContent='Consultando o banco central...';$('load-central-questions').disabled=true;try{const response=await fetch(base+'/api/questions?'+params.toString(),{headers:token?{Authorization:'Bearer '+token}:{}});const data=await response.json();if(!response.ok)throw new Error(data.detail||'Falha ao consultar o banco.');centralQuestions=(data.questions||[]).filter(q=>isAllowedSubject(q.subject)).map(q=>({id:String(q.id),subject:q.subject,grade:q.grade,topic:q.topic,type:q.question_type,level:q.difficulty,bncc:q.bncc_code,statement:q.statement,options:q.options||[],answer:q.answer,points:1,explanation:q.explanation,source:'central'}));selected.clear();renderBuilder();dashboard();status.textContent=centralQuestions.length+' questão(ões) encontradas. Selecione até '+$('builder-quantity').value+'. Total disponível: '+(data.total??centralQuestions.length)+'.'}catch(error){centralQuestions=[];selected.clear();renderBuilder();status.textContent='Não foi possível consultar o banco: '+error.message}finally{$('load-central-questions').disabled=false}}
-$('load-central-questions').onclick=loadCentralQuestions;$('builder-quantity').onchange=()=>{selected.clear();renderBuilder()};
-function fillClasses(){const s=$('e-class'),v=s.value;s.innerHTML='<option value="">Não vinculada</option>'+db.classes.map(c=>'<option value="'+c.id+'">'+esc(c.name)+'</option>').join('');s.value=v}
-$('examform').onsubmit=e=>{e.preventDefault();const qs=[...selected].map(id=>centralQuestions.find(q=>q.id===id)).filter(q=>q&&isAllowedSubject(q.subject));if(!isAllowedSubject($('e-subject').value)){toast('Selecione Matemática, Física ou Ciências.');return}if(qs.length!==Number($('builder-quantity').value)){toast('Selecione exatamente '+$('builder-quantity').value+' questões.');return}if(qs.some(q=>q.subject!==$('e-subject').value)){toast('Selecione somente questões da disciplina escolhida para a prova.');return}const exam={id:crypto.randomUUID(),code:'PL-'+Math.random().toString(36).slice(2,8).toUpperCase(),title:$('e-title').value.trim(),subject:$('e-subject').value,grade:$('e-grade').value,classId:$('e-class').value,date:$('e-date').value,instructions:$('e-instructions').value,school:$('e-school').value,questions:qs,createdAt:new Date().toISOString()};db.exams.push(exam);save();selected.clear();e.target.reset();$('selected-count').textContent='0 selecionadas';dashboard();renderBuilder();view('exams');toast('Avaliação criada com '+qs.length+' questões.')};
-function renderExams(){$('elist').innerHTML=db.exams.length?db.exams.slice().reverse().map(e=>'<article class="item"><div class="itemtop"><div><h3>'+esc(e.title)+'</h3><p>'+esc(e.subject)+' • '+esc(e.grade)+' • '+e.questions.length+' questões • '+esc(e.date||'Data não definida')+'</p></div><span class="tag">'+esc(e.code)+'</span></div><div class="actions"><button class="btn" data-preview="'+e.id+'">Visualizar prova</button><button class="btn alt" data-del-exam="'+e.id+'">Excluir</button></div></article>').join(''):'<div class="empty">Nenhuma avaliação criada ainda.</div>';document.querySelectorAll('[data-preview]').forEach(b=>b.onclick=()=>preview(b.dataset.preview));document.querySelectorAll('[data-del-exam]').forEach(b=>b.onclick=()=>{if(confirm('Excluir esta avaliação?')){db.exams=db.exams.filter(e=>e.id!==b.dataset.delExam);save();renderExams();dashboard()}})}
-function preview(id){activeExam=db.exams.find(e=>e.id===id);if(!activeExam)return;const e=activeExam;$('paper').innerHTML='<h2>'+esc(e.title)+'</h2><div class="school">'+esc(e.school||'')+' • PROVALAB / UNIVERSOLAB</div><div class="student"><div>Nome: ___________________________________</div><div>Turma: ____________________</div><div>Data: ____/____/________</div><div>Nota: ____________________</div></div><p style="font-size:11px"><b>Disciplina:</b> '+esc(e.subject)+' &nbsp; <b>Etapa:</b> '+esc(e.grade)+'</p><p style="font-size:11px">'+esc(e.instructions)+'</p><hr style="border:0;border-top:1px solid #cbd5e1;margin:15px 0">'+e.questions.map((q,i)=>'<div class="pquestion"><b>Questão '+(i+1)+'. ('+esc(q.points)+' ponto(s))</b><p>'+esc(q.statement).replace(/\n/g,'<br>')+'</p>'+(q.type==='objective'?'<div class="poptions">'+q.options.map((o,j)=>'<div>'+String.fromCharCode(65+j)+') '+esc(o)+'</div>').join('')+'</div>':'<div style="height:75px;border-bottom:1px solid #cbd5e1"></div>')+'</div>').join('');view('preview')}
-$('back-exams').onclick=()=>view('exams');$('print-exam').onclick=()=>window.print();
-$('classform').onsubmit=e=>{e.preventDefault();db.classes.push({id:crypto.randomUUID(),name:$('class-name').value.trim(),grade:$('class-grade').value,year:$('class-year').value,notes:$('class-notes').value});save();e.target.reset();$('class-year').value=2026;renderClasses();fillClasses();dashboard();toast('Turma cadastrada.')};
-function renderClasses(){$('clist').innerHTML=db.classes.length?db.classes.map(c=>'<article class="item"><div class="itemtop"><div><h3>'+esc(c.name)+'</h3><p>'+esc(c.grade)+' • Ano letivo '+esc(c.year)+'</p></div><button class="btn ghost" data-del-class="'+c.id+'">Excluir</button></div></article>').join(''):'<div class="empty">Nenhuma turma cadastrada.</div>';document.querySelectorAll('[data-del-class]').forEach(b=>b.onclick=()=>{if(confirm('Excluir esta turma?')){db.classes=db.classes.filter(c=>c.id!==b.dataset.delClass);save();renderClasses();fillClasses();dashboard()}})}
-renderQuestions();renderBuilder();renderExams();renderClasses();dashboard();if($('builder-api-url'))loadCentralQuestions();
+$('question-count').addEventListener('change',renderAnswers);
+$('exam-file').addEventListener('change',e=>{
+ selectedFile=e.target.files[0]||null;
+ $('file-name').textContent=selectedFile?selectedFile.name+' ('+(selectedFile.size/1024/1024).toFixed(2)+' MB)':'Nenhum arquivo selecionado.';
+});
+$('clear').addEventListener('click',()=>{document.querySelectorAll('[data-question]').forEach(x=>x.value='');$('result').style.display='none';$('status').textContent='Respostas limpas.'});
+$('generate').addEventListener('click',()=>{
+ const count=Math.max(1,Math.min(100,Number($('question-count').value)||1));
+ const answers={};
+ for(let i=1;i<=count;i++){const v=$('answer-'+i)?.value;if(!v){$('status').textContent='Selecione a alternativa correta de todas as questões. Falta responder a questão '+i+'.';$('answer-'+i)?.focus();return}answers[i]=v}
+ if(!$('exam-title').value.trim()){$('status').textContent='Informe o título da avaliação.';$('exam-title').focus();return}
+ const id='PL-'+(crypto.randomUUID?crypto.randomUUID().replace(/-/g,'').slice(0,10).toUpperCase():Math.random().toString(36).slice(2,12).toUpperCase());
+ const payload={app:'ProvaLab',version:1,id,title:$('exam-title').value.trim(),subject:$('exam-subject').value,grade:$('exam-grade').value.trim(),question_count:count,answers,created_at:new Date().toISOString()};
+ lastQrData=JSON.stringify(payload);
+ $('result-title').textContent=payload.title;
+ $('result-meta').textContent=[payload.subject,payload.grade,count+' questões'].filter(Boolean).join(' • ');
+ $('exam-code').textContent='Código da avaliação: '+id;
+ $('key-output').innerHTML=Object.entries(answers).map(([n,a])=>'<div class="key-cell">Questão '+n+' <b>'+a+'</b></div>').join('');
+ $('qrcode').innerHTML='';
+ if(typeof QRCode==='undefined'){$('status').textContent='Não foi possível carregar o gerador de QR Code. Verifique sua conexão e atualize a página.';return}
+ new QRCode($('qrcode'),{text:lastQrData,width:210,height:210,colorDark:'#183b37',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.M});
+ $('result').style.display='block';$('status').textContent='Gabarito e QR Code gerados. O arquivo da prova permanece no seu dispositivo e não é incluído no QR Code.';
+ $('result').scrollIntoView({behavior:'smooth',block:'start'});
+});
+$('print').addEventListener('click',()=>window.print());
+$('download-qr').addEventListener('click',()=>{
+ const canvas=$('qrcode').querySelector('canvas'),img=$('qrcode').querySelector('img');
+ const url=canvas?canvas.toDataURL('image/png'):img?.src;
+ if(!url){$('status').textContent='QR Code ainda não foi gerado.';return}
+ const a=document.createElement('a');a.href=url;a.download='provalab-qr-code.png';a.click();
+});
+renderAnswers();
 })();
 </script>
-<script>document.querySelector('.global-menu-toggle')?.addEventListener('click',()=>{const b=document.querySelector('.global-menu-toggle'),n=document.querySelector('.global-site-nav'),open=n.classList.toggle('mobile-open');b.setAttribute('aria-expanded',String(open));b.setAttribute('aria-label',open?'Fechar menu':'Abrir menu');b.textContent=open?'×':'☰'});</script></body></html>
+</body></html>
