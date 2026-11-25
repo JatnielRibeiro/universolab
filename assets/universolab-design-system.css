@@ -59,3 +59,50 @@ canvas,svg,.simulation,.simulator,.visualization,.visualizacao,.graph,.plot,.mat
  opacity:1!important;
  font-weight:700!important;
 }
+
+/* Cabeçalho padrão das páginas e abas do UniversoLab */
+.ul-page-heading{
+ display:block!important;
+ width:100%;
+ box-sizing:border-box;
+ padding:32px!important;
+ margin:0 0 24px!important;
+ border:0!important;
+ border-radius:22px!important;
+ background:linear-gradient(110deg,#0f766e 0%,#0d7776 48%,#164e63 100%)!important;
+ color:#fff!important;
+ text-align:left!important;
+ box-shadow:0 12px 30px rgba(15,118,110,.13)!important;
+}
+.ul-page-heading h1,.ul-page-heading h2{
+ margin:8px 0!important;
+ color:#fff!important;
+ font:700 clamp(30px,5vw,46px)/1.12 Fredoka,sans-serif!important;
+}
+.ul-page-heading p{
+ max-width:720px!important;
+ margin:0!important;
+ color:#e2f5f2!important;
+ font:700 16px/1.65 Nunito,sans-serif!important;
+ opacity:1!important;
+}
+.ul-page-heading .eyebrow,.ul-page-heading .hub-hero .eyebrow,.ul-page-heading .uc-kicker{
+ display:block;
+ margin:0 0 8px!important;
+ color:#ccfbf1!important;
+ font:900 11px Nunito,sans-serif!important;
+ letter-spacing:.12em!important;
+ text-transform:uppercase!important;
+}
+.ul-page-heading .pill{
+ display:inline-block;
+ margin:0 0 8px!important;
+ background:rgba(255,255,255,.13)!important;
+ border:1px solid rgba(255,255,255,.28)!important;
+ color:#ccfbf1!important;
+}
+@media(max-width:640px){
+ .ul-page-heading{padding:24px 20px!important;border-radius:18px!important}
+ .ul-page-heading h1,.ul-page-heading h2{font-size:clamp(28px,8vw,38px)!important}
+ .ul-page-heading p{font-size:14px!important;line-height:1.55!important}
+}
