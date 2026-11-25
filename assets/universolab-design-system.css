@@ -40,3 +40,22 @@ canvas,svg,.simulation,.simulator,.visualization,.visualizacao,.graph,.plot,.mat
  .panel,.card,.box,.tile{padding:16px!important}
  button,.btn,.button{min-height:42px}
 }
+
+/* Correção de contraste nos banners/áreas de destaque */
+.welcome,.hub-hero,.hero-banner,.page-hero{
+ color:#ffffff!important;
+}
+.welcome h1,.welcome h2,.welcome h3,
+.hub-hero h1,.hub-hero h2,.hub-hero h3,
+.hero-banner h1,.hero-banner h2,.hero-banner h3,
+.page-hero h1,.page-hero h2,.page-hero h3{
+ color:#ffffff!important;
+}
+.welcome p,.welcome .subtitle,.welcome .description,
+.hub-hero p,.hub-hero .subtitle,.hub-hero .description,
+.hero-banner p,.hero-banner .subtitle,.hero-banner .description,
+.page-hero p,.page-hero .subtitle,.page-hero .description{
+ color:#e6fffb!important;
+ opacity:1!important;
+ font-weight:700!important;
+}
