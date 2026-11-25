@@ -335,7 +335,18 @@ img,svg,video,canvas{max-width:100%}
  .draw-panel .draw-canvas-wrap{height:300px}
 }
 @media(prefers-reduced-motion:reduce){.draw-panel{transition:none}}
-.draw-tool-actions{display:flex;align-items:center;gap:7px}.draw-actions .draw-tool-button{width:36px;height:36px;display:grid;place-items:center;padding:7px;border-radius:10px;border:1.5px solid #cbd5e1;background:#fff;color:#475569}.draw-actions .draw-tool-button svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}.draw-actions .draw-tool-button.is-active{background:#ccfbf1!important;border-color:#0f766e!important;color:#0f766e!important;box-shadow:0 0 0 2px rgba(13,148,136,.12)}.draw-panel .draw-actions .draw-tool-button{width:34px;height:34px;padding:6px}</style>
+.draw-tool-actions{display:flex;align-items:center;gap:7px}.draw-actions .draw-tool-button{width:36px;height:36px;display:grid;place-items:center;padding:7px;border-radius:10px;border:1.5px solid #cbd5e1;background:#fff;color:#475569}.draw-actions .draw-tool-button svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}.draw-actions .draw-tool-button.is-active{background:#ccfbf1!important;border-color:#0f766e!important;color:#0f766e!important;box-shadow:0 0 0 2px rgba(13,148,136,.12)}.draw-panel .draw-actions .draw-tool-button{width:34px;height:34px;padding:6px}
+/* Ferramentas de aprendizagem: ProvaLab e UniversoCards lado a lado */
+.tool-features{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin:22px 0 28px;align-items:stretch}
+.tool-features .visual-feature{grid-template-columns:minmax(95px,.72fr) minmax(0,2fr);gap:16px;margin:0;padding:18px 20px;min-width:0}
+.tool-features .visual-feature-art{min-height:145px}
+.tool-features .visual-feature-copy h2{font-size:clamp(19px,1.8vw,25px)}
+.tool-features .visual-feature-copy p{font-size:13px}
+.universocards-art{background:linear-gradient(145deg,#e0f2fe,#ccfbf1)}
+.universocards-art>span{font-size:70px}
+@media(max-width:900px){.tool-features{grid-template-columns:1fr}.tool-features .visual-feature{grid-template-columns:minmax(130px,.6fr) minmax(0,2fr)}}
+@media(max-width:580px){.tool-features{gap:12px}.tool-features .visual-feature{grid-template-columns:1fr;padding:15px}.tool-features .visual-feature-art{min-height:100px}.tool-features .visual-feature-art>span{font-size:58px}.tool-features .visual-feature-copy h2{font-size:23px}}
+</style>
 <link rel="icon" type="image/svg+xml" href="assets/universolab-favicon.svg">
 <link rel="stylesheet" href="assets/universolab-design-system.css">
 </head>
@@ -363,9 +374,15 @@ img,svg,video,canvas{max-width:100%}
   <div class="visual-feature-copy"><span class="visual-feature-kicker">INVESTIGAÇÃO EXPERIMENTAL</span><h2>Experimentos de Laboratório de Física</h2><p>Aprenda Física por meio de experimentos, vídeos demonstrativos, aulas explicativas, observações e análise dos fenômenos.</p><a href="experimentos.html">Explorar experimentos <span aria-hidden="true">→</span></a></div>
 </section>
 </section>
+<section class="tool-features" aria-label="Ferramentas de aprendizagem">
 <section class="visual-feature" aria-label="ProvaLab — criação e correção de avaliações">
   <div class="visual-feature-art" aria-hidden="true"><span>📝</span><i>✓</i><i>▦</i><i>∑</i></div>
-  <div class="visual-feature-copy"><span class="visual-feature-kicker">AVALIAÇÃO INTELIGENTE</span><h2>ProvaLab — crie, aplique e corrija avaliações</h2><p>Elabore questões de Matemática e Física, monte provas objetivas e prepare cartões-resposta com QR Code. A leitura óptica está em desenvolvimento..</p><a href="provalab.html">Acessar ProvaLab <span aria-hidden="true">→</span></a></div>
+  <div class="visual-feature-copy"><span class="visual-feature-kicker">AVALIAÇÃO INTELIGENTE</span><h2>ProvaLab — crie, aplique e corrija avaliações</h2><p>Elabore questões de Matemática e Física, monte provas objetivas e prepare cartões-resposta com QR Code. A leitura óptica está em desenvolvimento.</p><a href="provalab.html">Acessar ProvaLab <span aria-hidden="true">→</span></a></div>
+</section>
+<section class="visual-feature universocards-feature" aria-label="UniversoCards — flashcards e revisão inteligente">
+  <div class="visual-feature-art universocards-art" aria-hidden="true"><span>🗃️</span><i>✦</i><i>↻</i><i>✓</i></div>
+  <div class="visual-feature-copy"><span class="visual-feature-kicker">MEMORIZAÇÃO INTELIGENTE</span><h2>UniversoCards — estude com flashcards</h2><p>Crie baralhos, pratique a memória ativa, revise com repetição espaçada e acompanhe sua evolução nos estudos.</p><a href="universocards.html">Acessar UniversoCards <span aria-hidden="true">→</span></a></div>
+</section>
 </section>
 <section class="discipline-hubs" aria-label="Áreas de conhecimento"><a class="discipline-card math" href="matematica.html"><span>∑</span><b>Matemática</b><small>Raciocínio, padrões e modelagem</small><em>Explorar área →</em></a><a class="discipline-card physics" href="fisica.html"><span>⚛</span><b>Física</b><small>Fenômenos, leis e experimentação</small><em>Explorar área →</em></a><a class="discipline-card science" href="ciencias.html"><span>🧪</span><b>Ciências</b><small>Investigar a natureza e o mundo</small><em>Explorar área →</em></a></section><section id="laboratorios"><div class="filters topic-filters" aria-label="Filtrar conteúdos por disciplina"><button class="filter active" data-filter="all">Todas</button><button class="filter" data-filter="matematica">Matemática</button><button class="filter" data-filter="fisica">Física</button><button class="filter" data-filter="ciencias">Ciências</button></div><div class="section-head"><h2>Conteúdos de Matemática, Física e Ciências — Laboratórios Virtuais e Simulações</h2><p>Explore os conteúdos por área do conhecimento.</p></div>
 <div class="grid" id="cards">
