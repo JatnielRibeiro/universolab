@@ -49,6 +49,54 @@ function download(blob,name){const a=document.createElement('a'),url=URL.createO
 $('export-json').onclick=()=>exportDeck('json');$('export-csv').onclick=()=>exportDeck('csv');
 $('import-file').onchange=async e=>{const f=e.target.files[0];if(!f)return;try{const text=await f.text();let imported;if(f.name.toLowerCase().endsWith('.json')){const obj=JSON.parse(text);imported=obj.deck||obj;if(!Array.isArray(imported.cards))throw Error('JSON sem lista de cards.')}else{const lines=parseCSV(text),head=lines.shift().map(x=>x.toLowerCase());const qi=head.findIndex(x=>['pergunta','frente','question'].includes(x)),ai=head.findIndex(x=>['resposta','verso','answer'].includes(x));if(qi<0||ai<0)throw Error('CSV precisa das colunas pergunta e resposta.');imported={name:f.name.replace(/\.csv$/i,''),description:'Importado de CSV',category:'Outros',color:'#0d9488',cards:lines.filter(r=>r[qi]&&r[ai]).map(r=>({front:r[qi],back:r[ai],hint:r[head.indexOf('dica')]||'',tags:(r[head.indexOf('tags')]||'').split('|')}))}}if(!imported.cards.length)throw Error('Nenhum card válido encontrado.');const nd={id:uid(),name:String(imported.name||'Baralho importado').slice(0,70),description:String(imported.description||''),category:['Matemática','Física','Ciências','Outros'].includes(imported.category)?imported.category:'Outros',color:imported.color||'#0d9488',createdAt:new Date().toISOString(),updatedAt:new Date().toISOString(),cards:imported.cards.map(c=>({id:uid(),deckId:'',front:String(c.front||c.question||'').trim(),back:String(c.back||c.answer||'').trim(),hint:c.hint||'',tags:Array.isArray(c.tags)?c.tags:[],imageFront:c.imageFront||'',imageBack:c.imageBack||'',ease:2.5,interval:0,reps:0,nextReview:today(),state:'novo',createdAt:new Date().toISOString()})).filter(c=>c.front&&c.back)};if(!nd.cards.length)throw Error('Não há pares pergunta/resposta válidos.');nd.cards.forEach(c=>c.deckId=nd.id);db.decks.push(nd);save();renderDecks();closeDialog('cards-dialog');toast('Importado: '+nd.cards.length+' cards.')}catch(err){toast('Falha na importação: '+err.message)}finally{e.target.value=''}};
 function parseCSV(text){const out=[];let row=[],field='',quoted=false;for(let i=0;i<text.length;i++){const ch=text[i];if(ch==='"'&&quoted&&text[i+1]==='"'){field+='"';i++}else if(ch==='"')quoted=!quoted;else if((ch===';'||ch===',')&&!quoted){row.push(field);field=''}else if((ch==='\n'||ch==='\r')&&!quoted){if(ch==='\r'&&text[i+1]==='\n')i++;row.push(field);if(row.some(x=>x.trim()))out.push(row);row=[];field=''}else field+=ch}row.push(field);if(row.some(x=>x.trim()))out.push(row);return out}
+
+let quizQuestions=[],quizIndex=0,quizScore=0,quizAnswered=false,quizTimer=null,quizSeconds=15;
+const shuffleArray=items=>{const a=[...items];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+function startQuiz(id){
+ const d=deck(id);if(!d||d.cards.length<2){toast('Adicione pelo menos 2 cards para iniciar um simulado.');return}
+ quizQuestions=shuffleArray(d.cards).slice(0,Math.min(10,d.cards.length)).map(c=>{
+  const distractors=shuffleArray(d.cards.filter(x=>x.id!==c.id&&x.back!==c.back)).slice(0,3).map(x=>x.back);
+  const options=shuffleArray([c.back,...distractors]);
+  return {front:c.front,answer:c.back,options,correct:options.indexOf(c.back)};
+ });
+ quizIndex=0;quizScore=0;activeDeck=id;
+ $('quiz-deck-name').textContent=d.name.toUpperCase();$('quiz-score').textContent='0 acertos';
+ closeDialog('cards-dialog');openDialog('quiz-dialog');renderQuizQuestion();
+}
+function renderQuizQuestion(){
+ if(quizIndex>=quizQuestions.length){finishQuiz();return}
+ const q=quizQuestions[quizIndex];quizAnswered=false;quizSeconds=15;
+ $('quiz-counter').textContent='Questão '+(quizIndex+1)+' de '+quizQuestions.length;
+ $('quiz-progress').style.width=(quizIndex/quizQuestions.length*100)+'%';
+ $('quiz-timer').textContent=quizSeconds+'s';$('quiz-timer').classList.remove('expired');
+ $('quiz-question').textContent=q.front;$('quiz-feedback').textContent='';
+ $('quiz-next').disabled=true;$('quiz-next').textContent=quizIndex===quizQuestions.length-1?'Ver resultado':'Próxima questão →';
+ $('quiz-options').innerHTML=q.options.map((option,i)=>'<button class="uc-quiz-option" data-option="'+i+'"><span>'+String.fromCharCode(65+i)+'</span><span>'+safe(option)+'</span></button>').join('');
+ $('quiz-options').querySelectorAll('[data-option]').forEach(b=>b.onclick=()=>answerQuiz(Number(b.dataset.option),false));
+ clearInterval(quizTimer);quizTimer=setInterval(()=>{quizSeconds--;$('quiz-timer').textContent=quizSeconds+'s';if(quizSeconds<=0){clearInterval(quizTimer);$('quiz-timer').classList.add('expired');answerQuiz(-1,true)}},1000);
+}
+function answerQuiz(choice,timeout){
+ if(quizAnswered)return;quizAnswered=true;clearInterval(quizTimer);
+ const q=quizQuestions[quizIndex],correct=choice===q.correct;
+ if(correct)quizScore++;
+ $('quiz-score').textContent=quizScore+' acerto'+(quizScore===1?'':'s');
+ $('quiz-options').querySelectorAll('[data-option]').forEach(b=>{const i=Number(b.dataset.option);b.disabled=true;if(i===q.correct)b.classList.add('correct');else if(i===choice)b.classList.add('incorrect')});
+ $('quiz-feedback').textContent=correct?'Resposta correta!':timeout?'Tempo esgotado. Resposta: '+q.answer:'Não foi dessa vez. Resposta: '+q.answer;
+ $('quiz-next').disabled=false;
+}
+function finishQuiz(){
+ clearInterval(quizTimer);const total=quizQuestions.length,pct=total?Math.round(quizScore/total*100):0;
+ const d=deck(activeDeck);
+ $('quiz-question').textContent='Simulado concluído!';
+ $('quiz-options').innerHTML='<div class="uc-quiz-result"><strong>'+pct+'%</strong><span>'+quizScore+' de '+total+' respostas corretas</span><p>'+safe(d?.name||'Baralho')+'</p></div>';
+ $('quiz-feedback').textContent=pct>=80?'Excelente desempenho! Continue praticando.':pct>=50?'Bom progresso. Revise os cards que errou.':'Vale revisar o conteúdo e tentar novamente.';
+ $('quiz-counter').textContent='Resultado final';$('quiz-progress').style.width='100%';$('quiz-timer').textContent='✓';$('quiz-score').textContent=quizScore+' acertos';$('quiz-next').disabled=false;$('quiz-next').textContent='Fechar simulado';$('quiz-next').onclick=()=>{closeDialog('quiz-dialog');$('quiz-next').onclick=nextQuizQuestion;renderDecks()};
+}
+function nextQuizQuestion(){quizIndex++;renderQuizQuestion()}
+$('quiz-deck').onclick=()=>startQuiz(activeDeck);
+$('quiz-next').onclick=nextQuizQuestion;
+$('quiz-end').onclick=()=>{if(confirm('Encerrar o simulado agora?')){clearInterval(quizTimer);closeDialog('quiz-dialog')}};
+
 function renderStats(){const cards=db.decks.flatMap(d=>d.cards),reviews=db.reviews;const news=cards.filter(c=>c.state==='novo').length,learning=cards.filter(c=>c.state==='aprendendo').length,master=cards.filter(c=>c.state==='dominado').length;const studied=new Set(reviews.map(r=>r.date));let streak=0;const cursor=new Date();if(!studied.has(cursor.toISOString().slice(0,10)))cursor.setDate(cursor.getDate()-1);while(studied.has(cursor.toISOString().slice(0,10))){streak++;cursor.setDate(cursor.getDate()-1)}const days=Array.from({length:rangeDays},(_,i)=>{const d=new Date();d.setDate(d.getDate()-(rangeDays-1-i));return d.toISOString().slice(0,10)});$('stats-cards').innerHTML=[['Cards novos',news],['Em aprendizado',learning],['Dominados',master],['Revisões registradas',reviews.length],['Sequência de dias',streak]].map(x=>'<div class="uc-stat"><span>'+x[0]+'</span><strong>'+x[1]+'</strong></div>').join('');const values=days.map(d=>reviews.filter(r=>r.date===d).length),max=Math.max(1,...values);$('activity-chart').innerHTML=days.map((d,i)=>'<div class="uc-chart-item"><div class="uc-chart-bar" style="height:'+Math.max(3,values[i]/max*100)+'px" title="'+values[i]+' revisões"></div><span>'+d.slice(5).replace('-','/')+'</span></div>').join('');$('deck-performance').innerHTML=db.decks.length?db.decks.map(d=>{const rr=reviews.filter(r=>r.deckId===d.id),hit=rr.length?Math.round(rr.filter(r=>r.rating>0).length/rr.length*100):0;return '<div class="uc-performance"><span>'+safe(d.name)+' · '+rr.length+' revisões</span><strong>'+hit+'% de acerto</strong></div>'}).join(''):'<p class="uc-muted">Ainda não há dados de desempenho.</p>'}
 document.querySelectorAll('[data-days]').forEach(b=>b.onclick=()=>{rangeDays=Number(b.dataset.days);document.querySelectorAll('[data-days]').forEach(x=>x.classList.toggle('active',x===b));renderStats()});
 renderDecks();
